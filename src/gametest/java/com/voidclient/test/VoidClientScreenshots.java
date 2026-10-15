@@ -32,6 +32,14 @@ public class VoidClientScreenshots implements FabricClientGameTest {
 				context.takeScreenshot("promo-hud-" + (int) yaw);
 				context.getInput().releaseKey(options -> options.keyUp);
 			}
+			context.getInput().lookAt(135, 55);
+			context.waitTicks(20);
+			context.takeScreenshot("promo-outline-purple");
+			context.runOnClient(minecraft -> VoidClient.config.purpleOutline = false);
+			context.waitTicks(10);
+			context.takeScreenshot("promo-outline-off");
+			context.runOnClient(minecraft -> VoidClient.config.purpleOutline = true);
+
 			context.setScreen(() -> new VoidScreen(null));
 			context.waitTicks(5);
 			context.takeScreenshot("promo-menu");

@@ -23,6 +23,7 @@ public class VoidConfig {
 	public boolean showKeystrokes = true;
 	public boolean smoothZoom = true;
 	public double zoomFactor = 4.0;
+	public boolean purpleOutline = true;
 
 	public static VoidConfig load() {
 		if (Files.exists(FILE)) {

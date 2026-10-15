@@ -20,7 +20,7 @@ You can change the preset any time in the Void Client menu (**Right Shift**).
 
 | Mod | What it does |
 | --- | --- |
-| Void Client | Auto-tuned settings, HUD (FPS, CPS, ping, coordinates, keystrokes), zoom, Right Shift menu |
+| Void Client | Auto-tuned settings, HUD (FPS, CPS, ping, coordinates, keystrokes), zoom, purple block outlines, Right Shift menu |
 | Sodium | Much faster chunk rendering (the big FPS boost) |
 | Lithium | Faster game logic |
 | FerriteCore | Uses a lot less RAM (fixes the "0 FPS for a few seconds" freezes) |
@@ -69,7 +69,7 @@ Download [`VoidClient.mrpack`](site/VoidClient.mrpack) and import it as a new in
 
 | Key | Action |
 | --- | --- |
-| Right Shift | Void Client menu: turn HUD parts on or off, change preset |
+| Right Shift | Void Client menu: turn HUD parts on or off, toggle purple block outlines, change preset |
 | C (hold) | Zoom. Scroll while holding to zoom more or less |
 | V | Simple Voice Chat menu |
 | Caps Lock | Push to talk (Simple Voice Chat default) |

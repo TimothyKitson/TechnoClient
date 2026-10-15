@@ -3,7 +3,9 @@
 	"package": "com.voidclient.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
+		"BlockOutlineRenderStateMixin",
 		"CameraMixin",
+		"LevelRendererMixin",
 		"MouseHandlerMixin"
 	],
 	"injectors": {

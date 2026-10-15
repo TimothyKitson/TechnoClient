@@ -40,6 +40,8 @@ public class VoidScreen extends Screen {
 		y += 24;
 		toggle(left, y, "Keystrokes", () -> config.showKeystrokes, value -> config.showKeystrokes = value);
 		toggle(right, y, "Smooth zoom", () -> config.smoothZoom, value -> config.smoothZoom = value);
+		y += 24;
+		toggle(left, y, "Purple outline", () -> config.purpleOutline, value -> config.purpleOutline = value);
 		y += 36;
 
 		addRenderableWidget(new PurpleButton(left, y, BUTTON_WIDTH, BUTTON_HEIGHT, presetLabel(), button -> {

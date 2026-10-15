@@ -11,6 +11,8 @@ public final class Theme {
 	public static final int BACKGROUND_BOTTOM = 0xFF1E0B3A;
 	public static final int TEXT = 0xFFFFFFFF;
 	public static final int TEXT_MUTED = 0xFFB9B3C9;
+	public static final int OUTLINE_BORDER = 0xFF2A0E52;
+	public static final int OUTLINE_LINE = 0xFFB794F6;
 
 	private Theme() {
 	}
