@@ -1,0 +1,131 @@
+{
+	"minecraft": "26.3",
+	"mods": [
+		{
+			"project": "fabric-api",
+			"project_id": "P7dR8mSH",
+			"version": "0.163.0+26.3",
+			"version_id": "bq3SsNGk",
+			"path": "mods/fabric-api-0.163.0+26.3.jar",
+			"url": "https://cdn.modrinth.com/data/P7dR8mSH/versions/bq3SsNGk/fabric-api-0.163.0%2B26.3.jar",
+			"sha1": "65ada8c72b61ffb256e956baf53df28155daa479",
+			"sha512": "44fd8de10fa71ea39cf984d44d2ec4c8e9314f8af88ad95788d9a09ac7b02b5c2f796ae88f40e314bd27df677e66fed59d1a1b6784350b0cc1fd62efac9e08a3",
+			"size": 1774707,
+			"requires": []
+		},
+		{
+			"project": "sodium",
+			"project_id": "AANobbMI",
+			"version": "mc26.3-0.9.2-fabric",
+			"version_id": "bAZQdGpg",
+			"path": "mods/sodium-fabric-0.9.2+mc26.3.jar",
+			"url": "https://cdn.modrinth.com/data/AANobbMI/versions/bAZQdGpg/sodium-fabric-0.9.2%2Bmc26.3.jar",
+			"sha1": "9acfe851e36f4fb27d7c5baa224e8bd4e0334283",
+			"sha512": "f3f260f204b8ce5e8777c2c73f537956755ec61f3817b0b78b5e5568e8aa40f14891f146475075109747665c7c88a45ca0ca9a8df3c68d79c58ecdaa8d8c4b93",
+			"size": 1908068,
+			"requires": []
+		},
+		{
+			"project": "lithium",
+			"project_id": "gvQqBUqZ",
+			"version": "mc26.3-0.26.2-fabric",
+			"version_id": "xS0Q8LSi",
+			"path": "mods/lithium-fabric-0.26.2+mc26.3.jar",
+			"url": "https://cdn.modrinth.com/data/gvQqBUqZ/versions/xS0Q8LSi/lithium-fabric-0.26.2%2Bmc26.3.jar",
+			"sha1": "dd5a4ec2c68d7601d8bce9076f789c55a5f8bef3",
+			"sha512": "4d7fee66132eedc71feab9390b92c95d7058edbdad0fecfac1d836a2950b97a7ca463afbede61c7ef361ce65e1f927ab9e89dde5bf2e0e0ce486afb5c5dbee40",
+			"size": 914543,
+			"requires": []
+		},
+		{
+			"project": "ferrite-core",
+			"project_id": "uXXizFIs",
+			"version": "9.0.0-fabric",
+			"version_id": "d5ddUdiB",
+			"path": "mods/ferritecore-9.0.0-fabric.jar",
+			"url": "https://cdn.modrinth.com/data/uXXizFIs/versions/d5ddUdiB/ferritecore-9.0.0-fabric.jar",
+			"sha1": "eac76ff0f3753422c61b2c44487d0d195d88d4bc",
+			"sha512": "d81fa97e11784c19d42f89c2f433831d007603dd7193cee45fa177e4a6a9c52b384b198586e04a0f7f63cd996fed713322578bde9a8db57e1188854ae5cbe584",
+			"size": 72677,
+			"requires": []
+		},
+		{
+			"project": "immediatelyfast",
+			"project_id": "5ZwdcRci",
+			"version": "1.17.1+26.3-fabric",
+			"version_id": "3MP9UR23",
+			"path": "mods/ImmediatelyFast-Fabric-1.17.1+26.3.jar",
+			"url": "https://cdn.modrinth.com/data/5ZwdcRci/versions/3MP9UR23/ImmediatelyFast-Fabric-1.17.1%2B26.3.jar",
+			"sha1": "f565bbeb201f2305e81761429d3f1f47e1c3a321",
+			"sha512": "8e139589fd995bce3d485a34d92a07243964212f7ed2e4fc2f6de5b9a74d0f59b03252e7ce40c64e006cf3e21bed5de27b830d33ef048b286e041f6178ad8428",
+			"size": 99586,
+			"requires": []
+		},
+		{
+			"project": "entityculling",
+			"project_id": "NNAgCjsB",
+			"version": "1.11.3",
+			"version_id": "X1g3VhTx",
+			"path": "mods/entityculling-fabric-1.11.3-mc26.3.jar",
+			"url": "https://cdn.modrinth.com/data/NNAgCjsB/versions/X1g3VhTx/entityculling-fabric-1.11.3-mc26.3.jar",
+			"sha1": "45f47f7a067f5efd733a32767dc3d1d770678b2a",
+			"sha512": "b6209bb62d72376d3fd284da137ec93a6dd38ebe5fd38ab9190deeade68b5b7f4bf915f4abcb4a807afe18cb9f0b59e11be789d46df6f0e6f64388ed2edc284d",
+			"size": 1508547,
+			"requires": [
+				"P7dR8mSH"
+			]
+		},
+		{
+			"project": "moreculling",
+			"project_id": "51shyZVL",
+			"version": "1.9.0",
+			"version_id": "t7vAlfgO",
+			"path": "mods/moreculling-fabric-26.3-1.9.0.jar",
+			"url": "https://cdn.modrinth.com/data/51shyZVL/versions/t7vAlfgO/moreculling-fabric-26.3-1.9.0.jar",
+			"sha1": "7308b0b0b6fffb0e076cabf97db7fc889d9ada68",
+			"sha512": "b1975ef43606a3baa1c93a040fbef96abfbf46ae6a1e364c60effd03a42568f945ede0bde329241e87adc6a9c2769dd1d13ad286869c689018035eff677442b2",
+			"size": 294320,
+			"requires": [
+				"9s6osm5g"
+			]
+		},
+		{
+			"project": "cloth-config",
+			"project_id": "9s6osm5g",
+			"version": "26.3.159+fabric",
+			"version_id": "fg2uyxOW",
+			"path": "mods/cloth-config-fabric-26.3.159.jar",
+			"url": "https://cdn.modrinth.com/data/9s6osm5g/versions/fg2uyxOW/cloth-config-fabric-26.3.159.jar",
+			"sha1": "9a5cce069380a2047250831dcb19f4ef1b15872d",
+			"sha512": "8924e19d41845096724fa10f3717bc51964a0edbbbcad0ff1e6c6187a398b08f356e49579a657c2dc44a7f92e3850771f3ca70bf8c1f654de60425163b91dbb1",
+			"size": 1135009,
+			"requires": []
+		},
+		{
+			"project": "dynamic-fps",
+			"project_id": "LQ3K71Q1",
+			"version": "3.11.10",
+			"version_id": "Jwq069rR",
+			"path": "mods/dynamic-fps-3.11.10+minecraft-26.3.0-fabric.jar",
+			"url": "https://cdn.modrinth.com/data/LQ3K71Q1/versions/Jwq069rR/dynamic-fps-3.11.10%2Bminecraft-26.3.0-fabric.jar",
+			"sha1": "a4860c9480f0ce1a468e1e4c254214b1f97e19b3",
+			"sha512": "7976d11411babfa3ac0c38898f26ee6192f22a4f595b637eeae3cc5185f326c0e4b9fd7d00b3d7e8d020dd861295f0df52f9a9d7c67e88946d0ba9fff4a9f894",
+			"size": 189474,
+			"requires": [
+				"P7dR8mSH"
+			]
+		},
+		{
+			"project": "simple-voice-chat",
+			"project_id": "9eGKb6K1",
+			"version": "fabric-2.6.24+26.3",
+			"version_id": "OLnMVWXy",
+			"path": "mods/voicechat-fabric-2.6.24+26.3.jar",
+			"url": "https://cdn.modrinth.com/data/9eGKb6K1/versions/OLnMVWXy/voicechat-fabric-2.6.24%2B26.3.jar",
+			"sha1": "2ac4bb844e3b23b6e0a729edcf521ba1198ec5d2",
+			"sha512": "414eb51967305fe7740d34016bc8e3e4e2fa1590e1278ad06bcdfa0687f65007b825d345dc09f79a992704a51ec93baf01fe727e0bbc32fdf506828b5a65d85a",
+			"size": 5612855,
+			"requires": []
+		}
+	]
+}

@@ -1,0 +1,15 @@
+{
+	"schemaVersion": 1,
+	"id": "voidclient-gametest",
+	"version": "1.0.0",
+	"name": "Void Client Game Tests",
+	"environment": "client",
+	"entrypoints": {
+		"fabric-client-gametest": [
+			"com.voidclient.test.VoidClientGameTest"
+		]
+	},
+	"depends": {
+		"voidclient": "*"
+	}
+}

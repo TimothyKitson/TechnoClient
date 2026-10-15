@@ -1,0 +1,29 @@
+name: build
+on: [pull_request, push]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v6
+      - name: validate gradle wrapper
+        uses: gradle/actions/wrapper-validation@v6
+      - name: setup jdk
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+      - name: make gradle wrapper executable
+        run: chmod +x ./gradlew
+      - name: build mod
+        run: ./gradlew build
+      - name: build modpack
+        run: python3 pack/build.py build --jar build/libs/voidclient-$(grep '^version=' gradle.properties | cut -d= -f2).jar --version $(grep '^version=' gradle.properties | cut -d= -f2) --out dist
+      - name: upload modpack
+        uses: actions/upload-artifact@v7
+        with:
+          name: VoidClient
+          path: |
+            dist/*.mrpack
+            build/libs/voidclient-*.jar

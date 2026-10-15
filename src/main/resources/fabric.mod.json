@@ -1,0 +1,29 @@
+{
+	"schemaVersion": 1,
+	"id": "voidclient",
+	"version": "${version}",
+	"name": "Void Client",
+	"description": "FPS boost presets, a Lunar-style HUD and zoom.",
+	"authors": [
+		"Timothy Kitson"
+	],
+	"license": "CC0-1.0",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"com.voidclient.VoidClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	},
+	"mixins": [
+		"voidclient.mixins.json"
+	],
+	"contact": {
+		"sources": "https://github.com/TimothyKitson/TechnoClient"
+	}
+}

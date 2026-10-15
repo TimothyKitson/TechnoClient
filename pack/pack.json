@@ -1,0 +1,18 @@
+{
+	"name": "Void Client",
+	"summary": "FPS boost for weak laptops, a purple Lunar-style HUD, zoom and Simple Voice Chat.",
+	"minecraft": "26.3",
+	"fabric_loader": "0.19.5",
+	"mods": [
+		{"project": "fabric-api"},
+		{"project": "sodium"},
+		{"project": "lithium"},
+		{"project": "ferrite-core"},
+		{"project": "immediatelyfast"},
+		{"project": "entityculling"},
+		{"project": "moreculling"},
+		{"project": "cloth-config"},
+		{"project": "dynamic-fps"},
+		{"project": "simple-voice-chat", "allow_beta": true}
+	]
+}
