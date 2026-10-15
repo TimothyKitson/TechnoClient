@@ -43,32 +43,27 @@ Every server makes its own rules, so if a server lists banned mods, give it a qu
 
 ## Install
 
-Void Client uses **Prism Launcher**. It's free, and the portable version runs without admin rights, so it works on school laptops.
+1. Go to **[getvoidclient.com](https://getvoidclient.com)** and click **Download for Windows**.
+2. Close the Minecraft Launcher, open `VoidClient-Installer.exe` and press **Install**.
+   - If Windows says "Windows protected your PC", click **More info → Run anyway**. That shows for new apps that aren't code-signed.
+3. Open the Minecraft Launcher, pick **Void Client** next to the Play button, and press **Play**.
 
-1. Go to [prismlauncher.org](https://prismlauncher.org/download/windows/), choose the **Portable** version, unzip it into a folder (for example `Documents\PrismLauncher`) and run `prismlauncher.exe`.
-2. Sign in with your Microsoft account (Accounts, top right).
-3. Download [`download/VoidClient.mrpack`](download/VoidClient.mrpack) from this repo (open it, then click the download button).
-4. In Prism click **Add Instance → Import**, pick `VoidClient.mrpack`, then **OK**. Prism downloads all the mods and the right Java for you.
-5. Set the RAM: right-click the instance → **Edit → Settings → Java**, tick **Memory** and set **Maximum memory allocation**:
-   - **4 GB laptop (school Latitude 3520): 2048 MiB.** Giving it more makes the freezes worse, because Windows runs out of memory.
-   - 8 GB laptop: 3072 MiB
-   - 16 GB laptop (home G16 7630): 4096 MiB
+The installer:
+- needs no admin rights and only writes to your user folder
+- adds a Fabric 26.3 version and a **Void Client** profile to the normal Minecraft Launcher, keeping your other profiles
+- downloads every mod straight from Modrinth and checks each file's SHA-512 hash
+- gives Minecraft the right RAM for the laptop (2 GB on 4 GB laptops, 3 GB on 8 GB, 4 GB on 12 GB and up), which fixes the freezes on low-RAM laptops
+- keeps Void Client in its own folder (`%APPDATA%\.voidclient`), so your normal Minecraft is untouched, and copies your server list over
+- updates cleanly when you run a newer version, without touching worlds, settings or mods you added yourself
 
-   If this is set wrong, Void Client tells you the right number in a pop-up when the game starts.
-6. Press **Launch**.
+### Tips
 
-### Extra tips for the school laptop
+- **School laptop:** plug in the charger, set Windows power mode to **Best performance**, and close Chrome before playing.
+- **Gaming laptop:** if Void Client says "Running on built-in graphics", go to Windows Settings → System → Display → Graphics, add the launcher's `javaw.exe` and set it to **High performance**.
 
-- Plug in the charger. Laptops slow themselves down on battery.
-- Windows Settings → System → Power → Power mode → **Best performance**.
-- Close Chrome and other apps before playing. With 4 GB, every bit of RAM counts.
-- In Prism's settings, turn on the option to close the launcher once the game opens, so it isn't using RAM while you play.
+### Prism Launcher or Modrinth App
 
-### Extra tip for the home laptop
-
-Gaming laptops sometimes run Minecraft on the weak built-in Intel graphics instead of the NVIDIA card. If Void Client shows "Running on built-in graphics":
-
-Windows Settings → System → Display → Graphics → **Add desktop app** → open the `java` folder inside your Prism folder → pick `javaw.exe` → **Options → High performance**. Then restart the game.
+Download [`VoidClient.mrpack`](site/VoidClient.mrpack) and import it as a new instance. Set the instance memory to 2048 MB on a 4 GB laptop, 3072 MB on 8 GB, or 4096 MB on 16 GB.
 
 ## Controls
 
@@ -83,14 +78,17 @@ All keys can be changed in Options → Controls → Key Binds.
 
 ## For developers
 
-Needs Java 25.
+Needs Java 25, Go 1.24 and Python 3.
 
 ```
-./gradlew build                  # builds build/libs/voidclient-<version>.jar
+tools/build-site.sh              # builds the mod, the .mrpack and the Windows installer, then fills site/
 ./gradlew runClient              # runs the game with Void Client and every mod in the pack
-./gradlew runClientGameTest      # in-game automated test (world, HUD, zoom, CPS, menu)
+./gradlew runClientGameTest      # in-game automated test (presets, zoom, CPS, menu) plus promo screenshots
 python3 pack/build.py lock       # update pack/mods.lock.json to the newest 26.3 versions
-python3 pack/build.py build --jar build/libs/voidclient-1.0.0.jar --version 1.0.0
 ```
 
-The mod list lives in `pack/pack.json`, and the exact versions are pinned in `pack/mods.lock.json`.
+- `src/` is the Void Client Fabric mod.
+- `pack/` holds the mod list (`pack.json`) and the exact pinned versions (`mods.lock.json`).
+- `installer/` is the Windows installer (Go, no dependencies besides `golang.org/x/sys`). `-silent` installs without a window, and `-minecraft-dir` and `-game-dir` point it at test folders.
+- `site/` is the website for getvoidclient.com. Upload the whole folder to Netlify.
+- `branding/` has the icon source (`make_icon.py`) and a 1024 px master.

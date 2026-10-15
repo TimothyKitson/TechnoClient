@@ -1,0 +1,17 @@
+/VoidClient-Installer.exe
+  Content-Type: application/vnd.microsoft.portable-executable
+  Content-Disposition: attachment; filename="VoidClient-Installer.exe"
+  Cache-Control: no-cache
+
+/VoidClient.mrpack
+  Content-Type: application/x-modrinth-modpack+zip
+  Content-Disposition: attachment; filename="VoidClient.mrpack"
+  Cache-Control: no-cache
+
+/img/*
+  Cache-Control: public, max-age=604800
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY

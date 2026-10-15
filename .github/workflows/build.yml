@@ -14,16 +14,22 @@ jobs:
         with:
           java-version: '25'
           distribution: 'microsoft'
-      - name: make gradle wrapper executable
-        run: chmod +x ./gradlew
-      - name: build mod
-        run: ./gradlew build
-      - name: build modpack
-        run: python3 pack/build.py build --jar build/libs/voidclient-$(grep '^version=' gradle.properties | cut -d= -f2).jar --version $(grep '^version=' gradle.properties | cut -d= -f2) --out dist
-      - name: upload modpack
+      - name: setup go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: installer/go.mod
+      - name: make scripts executable
+        run: chmod +x ./gradlew tools/build-site.sh
+      - name: build mod, modpack, installer and site
+        run: tools/build-site.sh
+      - name: test installer
+        run: |
+          mkdir -p "$RUNNER_TEMP/mc/.minecraft"
+          echo '{"profiles":{},"version":3}' > "$RUNNER_TEMP/mc/.minecraft/launcher_profiles.json"
+          cd installer && go run . -silent -minecraft-dir "$RUNNER_TEMP/mc/.minecraft" -game-dir "$RUNNER_TEMP/mc/.voidclient"
+          test -f "$RUNNER_TEMP/mc/.voidclient/mods/voidclient-$(grep '^version=' ../gradle.properties | cut -d= -f2).jar"
+      - name: upload site
         uses: actions/upload-artifact@v7
         with:
-          name: VoidClient
-          path: |
-            dist/*.mrpack
-            build/libs/voidclient-*.jar
+          name: VoidClient-site
+          path: site/

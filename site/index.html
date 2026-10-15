@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Void Client – Smooth Minecraft on any laptop</title>
+<meta name="description" content="Void Client is a free FPS-boosting client for Minecraft Java 26.3 with a purple HUD, zoom and voice chat. It tunes itself for your PC, from a 4 GB school laptop to a gaming laptop.">
+<meta name="theme-color" content="#07040f">
+<meta name="color-scheme" content="dark">
+<link rel="canonical" href="https://getvoidclient.com/">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+<link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Void Client">
+<meta property="og:title" content="Void Client – Smooth Minecraft on any laptop">
+<meta property="og:description" content="Free FPS boost for Minecraft 26.3 with a purple HUD, zoom and voice chat. One installer, no admin needed.">
+<meta property="og:url" content="https://getvoidclient.com/">
+<meta property="og:image" content="https://getvoidclient.com/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+:root {
+	--bg: #07040f;
+	--bg-raised: #0f0a1d;
+	--bg-card: #130c24;
+	--line: #2a1b4a;
+	--line-strong: #4c1d95;
+	--purple: #8b5cf6;
+	--purple-bright: #a78bfa;
+	--purple-soft: #c4b5fd;
+	--purple-deep: #5b21b6;
+	--text: #f5f3ff;
+	--text-muted: #b9b3c9;
+	--text-faint: #7d7494;
+	--radius: 16px;
+	--max: 1120px;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+	margin: 0;
+	background: var(--bg);
+	color: var(--text);
+	font-family: "Segoe UI", system-ui, -apple-system, Roboto, "Helvetica Neue", Arial, sans-serif;
+	font-size: 17px;
+	line-height: 1.6;
+	-webkit-font-smoothing: antialiased;
+}
+
+body::before {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	background:
+		radial-gradient(900px 520px at 78% -8%, rgba(139, 92, 246, 0.22), transparent 60%),
+		radial-gradient(700px 480px at -10% 30%, rgba(91, 33, 182, 0.18), transparent 60%),
+		var(--bg);
+}
+
+a { color: var(--purple-soft); }
+a:hover { color: var(--text); }
+
+img { max-width: 100%; display: block; }
+
+.wrap {
+	width: 100%;
+	max-width: var(--max);
+	margin: 0 auto;
+	padding: 0 24px;
+}
+
+.skip {
+	position: absolute;
+	left: -999px;
+}
+.skip:focus {
+	left: 16px;
+	top: 16px;
+	z-index: 10;
+	background: var(--purple);
+	color: #fff;
+	padding: 8px 14px;
+	border-radius: 8px;
+}
+
+header.nav {
+	position: sticky;
+	top: 0;
+	z-index: 5;
+	background: rgba(7, 4, 15, 0.78);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border-bottom: 1px solid rgba(76, 29, 149, 0.35);
+}
+
+.nav .wrap {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	height: 64px;
+}
+
+.brand {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	color: var(--text);
+	text-decoration: none;
+	font-weight: 800;
+	letter-spacing: 0.08em;
+	font-size: 15px;
+}
+.brand img { width: 32px; height: 32px; border-radius: 8px; }
+
+.nav-links {
+	display: flex;
+	align-items: center;
+	gap: 26px;
+	font-size: 15px;
+}
+.nav-links a { color: var(--text-muted); text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
+.nav-links a.btn-primary, .nav-links a.btn-primary:hover { color: #fff; }
+
+.btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 10px;
+	padding: 12px 20px;
+	border-radius: 12px;
+	font-weight: 700;
+	font-size: 15px;
+	text-decoration: none;
+	border: 1px solid transparent;
+	transition: background-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+	cursor: pointer;
+}
+.btn-primary {
+	background: var(--purple);
+	color: #fff;
+	box-shadow: 0 10px 30px -10px rgba(139, 92, 246, 0.7);
+}
+.btn-primary:hover { background: var(--purple-bright); color: #fff; transform: translateY(-1px); }
+.btn-primary:focus-visible, .btn-ghost:focus-visible { outline: 3px solid var(--purple-soft); outline-offset: 3px; }
+.btn-ghost {
+	background: transparent;
+	color: var(--text);
+	border-color: var(--line-strong);
+}
+.btn-ghost:hover { background: rgba(139, 92, 246, 0.12); color: var(--text); }
+.btn-small { padding: 8px 14px; font-size: 14px; border-radius: 10px; }
+.btn-big { padding: 16px 28px; font-size: 17px; border-radius: 14px; }
+.btn svg { width: 20px; height: 20px; flex: none; }
+
+.hero {
+	padding: 72px 0 56px;
+}
+.hero .wrap {
+	display: grid;
+	grid-template-columns: 1.05fr 1fr;
+	gap: 56px;
+	align-items: center;
+}
+
+.eyebrow {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 12px;
+	border-radius: 999px;
+	border: 1px solid var(--line-strong);
+	background: rgba(139, 92, 246, 0.1);
+	color: var(--purple-soft);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+}
+.eyebrow .dot {
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: #4ade80;
+	box-shadow: 0 0 10px #4ade80;
+}
+
+h1 {
+	margin: 18px 0 16px;
+	font-size: clamp(38px, 5.6vw, 64px);
+	line-height: 1.04;
+	letter-spacing: -0.02em;
+	font-weight: 800;
+}
+h1 .glow {
+	background: linear-gradient(100deg, #e9e3ff 0%, var(--purple-bright) 45%, var(--purple) 100%);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.lead {
+	margin: 0 0 28px;
+	color: var(--text-muted);
+	font-size: 19px;
+	max-width: 34em;
+}
+
+.cta-row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 14px;
+}
+.cta-meta {
+	margin-top: 14px;
+	color: var(--text-faint);
+	font-size: 14px;
+}
+.cta-meta a { color: var(--text-muted); }
+
+.os-note {
+	display: none;
+	margin-top: 16px;
+	padding: 12px 14px;
+	border-radius: 12px;
+	border: 1px solid var(--line-strong);
+	background: rgba(139, 92, 246, 0.08);
+	color: var(--purple-soft);
+	font-size: 15px;
+}
+.os-note.show { display: block; }
+
+.shot {
+	position: relative;
+	border-radius: var(--radius);
+	padding: 10px;
+	background: linear-gradient(160deg, rgba(167, 139, 250, 0.45), rgba(76, 29, 149, 0.25) 40%, rgba(19, 12, 36, 0.6));
+	box-shadow: 0 40px 80px -30px rgba(139, 92, 246, 0.55), 0 0 0 1px rgba(167, 139, 250, 0.15) inset;
+}
+.shot img {
+	border-radius: 10px;
+	width: 100%;
+	height: auto;
+}
+.shot .badge {
+	position: absolute;
+	left: -14px;
+	bottom: -18px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 10px 14px;
+	border-radius: 12px;
+	background: var(--bg-card);
+	border: 1px solid var(--line-strong);
+	font-size: 14px;
+	box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.8);
+}
+.badge strong { color: var(--purple-soft); font-size: 18px; }
+
+section { padding: 72px 0; }
+
+.section-head {
+	max-width: 640px;
+	margin-bottom: 36px;
+}
+.kicker {
+	color: var(--purple-bright);
+	font-weight: 700;
+	font-size: 13px;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+}
+h2 {
+	margin: 8px 0 12px;
+	font-size: clamp(28px, 3.6vw, 40px);
+	line-height: 1.15;
+	letter-spacing: -0.01em;
+}
+.section-head p { margin: 0; color: var(--text-muted); }
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 18px;
+}
+
+.card {
+	padding: 24px;
+	border-radius: var(--radius);
+	background: linear-gradient(180deg, var(--bg-card), var(--bg-raised));
+	border: 1px solid var(--line);
+}
+.card h3 {
+	margin: 14px 0 8px;
+	font-size: 19px;
+}
+.card p { margin: 0; color: var(--text-muted); font-size: 15.5px; }
+.icon {
+	display: grid;
+	place-items: center;
+	width: 44px;
+	height: 44px;
+	border-radius: 12px;
+	background: rgba(139, 92, 246, 0.14);
+	border: 1px solid rgba(139, 92, 246, 0.35);
+	color: var(--purple-soft);
+}
+.icon svg { width: 22px; height: 22px; }
+
+.presets {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 18px;
+}
+.preset {
+	padding: 22px;
+	border-radius: var(--radius);
+	border: 1px solid var(--line);
+	background: var(--bg-raised);
+}
+.preset .name {
+	font-weight: 800;
+	font-size: 20px;
+}
+.preset .for { color: var(--text-muted); font-size: 15px; margin: 4px 0 14px; }
+.preset dl {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 6px 16px;
+	margin: 0;
+	font-size: 15px;
+}
+.preset dt { color: var(--text-faint); }
+.preset dd { margin: 0; font-weight: 600; text-align: right; }
+.preset.potato { border-color: var(--line-strong); box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.25) inset; }
+
+.gallery {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 18px;
+}
+.gallery figure { margin: 0; }
+.gallery figcaption { margin-top: 10px; color: var(--text-muted); font-size: 15px; }
+.gallery .shot { padding: 8px; }
+
+.steps {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 18px;
+	counter-reset: step;
+}
+.step {
+	position: relative;
+	padding: 24px;
+	border-radius: var(--radius);
+	background: var(--bg-raised);
+	border: 1px solid var(--line);
+}
+.step::before {
+	counter-increment: step;
+	content: counter(step);
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 34px;
+	border-radius: 50%;
+	background: var(--purple);
+	color: #fff;
+	font-weight: 800;
+}
+.step h3 { margin: 14px 0 6px; font-size: 18px; }
+.step p { margin: 0; color: var(--text-muted); font-size: 15.5px; }
+
+.install-panel {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 36px;
+	align-items: center;
+	margin-top: 28px;
+	padding: 28px;
+	border-radius: 20px;
+	border: 1px solid var(--line);
+	background: linear-gradient(135deg, rgba(91, 33, 182, 0.18), rgba(15, 10, 29, 0.6));
+}
+.install-panel ul { margin: 0; padding-left: 20px; color: var(--text-muted); }
+.install-panel li + li { margin-top: 8px; }
+.install-panel li strong { color: var(--text); }
+
+.faq { max-width: 820px; }
+details {
+	border: 1px solid var(--line);
+	border-radius: 14px;
+	background: var(--bg-raised);
+	padding: 0 20px;
+}
+details + details { margin-top: 12px; }
+summary {
+	cursor: pointer;
+	list-style: none;
+	padding: 18px 0;
+	font-weight: 700;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 16px;
+}
+summary::-webkit-details-marker { display: none; }
+summary::after {
+	content: "+";
+	color: var(--purple-bright);
+	font-size: 22px;
+	font-weight: 400;
+	line-height: 1;
+}
+details[open] summary::after { content: "–"; }
+summary:focus-visible { outline: 2px solid var(--purple-soft); outline-offset: 4px; border-radius: 6px; }
+details p, details ol { margin: 0 0 18px; color: var(--text-muted); }
+details ol { padding-left: 22px; }
+kbd {
+	font-family: ui-monospace, Consolas, monospace;
+	font-size: 0.85em;
+	padding: 2px 7px;
+	border-radius: 6px;
+	border: 1px solid var(--line-strong);
+	border-bottom-width: 2px;
+	background: var(--bg-card);
+	color: var(--text);
+}
+code {
+	font-family: ui-monospace, Consolas, monospace;
+	font-size: 0.88em;
+	color: var(--purple-soft);
+	background: rgba(139, 92, 246, 0.1);
+	padding: 1px 6px;
+	border-radius: 6px;
+	word-break: break-all;
+}
+
+.final {
+	text-align: center;
+	padding: 56px 24px;
+	border-radius: 24px;
+	border: 1px solid var(--line-strong);
+	background:
+		radial-gradient(500px 260px at 50% 0%, rgba(139, 92, 246, 0.35), transparent 70%),
+		var(--bg-raised);
+}
+.final img { width: 84px; height: 84px; margin: 0 auto 18px; }
+.final h2 { margin-top: 0; }
+.final p { color: var(--text-muted); margin: 0 auto 26px; max-width: 32em; }
+
+.credits {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 10px;
+	margin-top: 18px;
+}
+.credits a {
+	padding: 6px 12px;
+	border-radius: 999px;
+	border: 1px solid var(--line);
+	background: var(--bg-raised);
+	color: var(--text-muted);
+	text-decoration: none;
+	font-size: 14px;
+}
+.credits a:hover { border-color: var(--line-strong); color: var(--text); }
+
+footer {
+	padding: 40px 0 56px;
+	border-top: 1px solid rgba(76, 29, 149, 0.3);
+	color: var(--text-faint);
+	font-size: 14px;
+}
+footer .wrap {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 16px;
+}
+footer p { margin: 0; max-width: 46em; }
+
+@media (max-width: 920px) {
+	.hero .wrap { grid-template-columns: 1fr; gap: 44px; }
+	.hero { padding-top: 48px; }
+	.grid, .presets, .steps { grid-template-columns: 1fr 1fr; }
+	.install-panel { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+	body { font-size: 16px; }
+	.wrap { padding: 0 16px; }
+	.nav-links a:not(.btn) { display: none; }
+	.grid, .presets, .steps, .gallery { grid-template-columns: 1fr; }
+	section { padding: 52px 0; }
+	.lead { font-size: 17px; }
+	.btn-big { width: 100%; }
+	.shot .badge { left: 8px; bottom: -16px; }
+	.install-panel { padding: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html { scroll-behavior: auto; }
+	.btn { transition: none; }
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+	<div class="wrap">
+		<a class="brand" href="#top" aria-label="Void Client home">
+			<img src="/img/favicon-32.png" srcset="/img/favicon-32.png 1x, /img/apple-touch-icon.png 4x" width="32" height="32" alt="">
+			VOID CLIENT
+		</a>
+		<nav class="nav-links" aria-label="Main">
+			<a href="#features">Features</a>
+			<a href="#install">Install</a>
+			<a href="#faq">FAQ</a>
+			<a class="btn btn-primary btn-small" href="/VoidClient-Installer.exe" download>Download</a>
+		</nav>
+	</div>
+</header>
+
+<main id="main">
+	<section class="hero" id="top">
+		<div class="wrap">
+			<div>
+				<span class="eyebrow"><span class="dot" aria-hidden="true"></span>Free · Minecraft Java 26.3</span>
+				<h1>Smooth Minecraft on <span class="glow">any laptop.</span></h1>
+				<p class="lead">Void Client boosts your FPS, stops the random freezes and adds a clean purple HUD, zoom and voice chat. It checks your PC and picks the best settings by itself.</p>
+				<div class="cta-row">
+					<a class="btn btn-primary btn-big" href="/VoidClient-Installer.exe" download>
+						<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10.5 4.4v7.1H3V5.5Zm0 13 7.5 1.1v-7.1H3v6Zm8.5 1.3L21 21.2V12.5h-9.5v7.3Zm0-15.6v7.3H21V2.8l-9.5 1.4Z"/></svg>
+						Download for Windows
+					</a>
+					<a class="btn btn-ghost btn-big" href="#install">How it works</a>
+				</div>
+				<p class="cta-meta">One 6 MB installer · Windows 10 &amp; 11 · No admin needed · <a href="/VoidClient.mrpack" download>.mrpack for Prism / Modrinth App</a></p>
+				<p class="os-note" id="os-note" role="status"></p>
+			</div>
+			<div class="shot">
+				<picture>
+					<source srcset="/img/hud.webp" type="image/webp">
+					<img src="/img/hud.png" width="854" height="480" alt="Minecraft with the Void Client HUD showing FPS, clicks per second, coordinates and a purple keystrokes display">
+				</picture>
+				<div class="badge" aria-hidden="true"><strong>11</strong> mods, one installer</div>
+			</div>
+		</div>
+	</section>
+
+	<section id="features">
+		<div class="wrap">
+			<div class="section-head">
+				<div class="kicker">Features</div>
+				<h2>Everything you need, nothing that gets you banned</h2>
+				<p>Built on the best performance mods out there, plus our own HUD. No cheats, ever.</p>
+			</div>
+			<div class="grid">
+				<article class="card">
+					<div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg></div>
+					<h3>Way more FPS</h3>
+					<p>Sodium rewrites how chunks are drawn, and Lithium speeds up game logic. Built-in laptop graphics often run a lot faster.</p>
+				</article>
+				<article class="card">
+					<div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></svg></div>
+					<h3>Tunes itself</h3>
+					<p>Checks your graphics card and RAM on first launch and picks Potato, Balanced or High. Change it anytime with <kbd>Right Shift</kbd>.</p>
+				</article>
+				<article class="card">
+					<div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg></div>
+					<h3>No more freezes</h3>
+					<p>FerriteCore cuts memory use, and the installer gives Minecraft the right amount of RAM for your laptop. That fixes the "0 FPS for a few seconds" stutters.</p>
+				</article>
+				<article class="card">
+					<div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M7 8h4M7 12h7"/></svg></div>
+					<h3>Purple HUD</h3>
+					<p>FPS, CPS, ping, coordinates and keystrokes in a clean purple-and-black style. Turn each part on or off.</p>
+				</article>
+				<article class="card">
+					<div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/></svg></div>
+					<h3>Smooth zoom</h3>
+					<p>Hold <kbd>C</kbd> to zoom and scroll to zoom further. Mouse sensitivity drops while zoomed so aiming stays steady.</p>
+				</article>
+				<article class="card">
+					<div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg></div>
+					<h3>Voice chat</h3>
+					<p>Simple Voice Chat is included, so you can talk to nearby players on servers that support it. Push to talk with <kbd>Caps Lock</kbd>.</p>
+				</article>
+			</div>
+		</div>
+	</section>
+
+	<section id="presets">
+		<div class="wrap">
+			<div class="section-head">
+				<div class="kicker">Auto-tune</div>
+				<h2>One download, right settings for every laptop</h2>
+				<p>The same Void Client works on a 4 GB school laptop and a gaming laptop. It picks the preset for you.</p>
+			</div>
+			<div class="presets">
+				<div class="preset potato">
+					<div class="name">Potato</div>
+					<div class="for">Built-in graphics, under 7 GB RAM</div>
+					<dl>
+						<dt>Render distance</dt><dd>6 chunks</dd>
+						<dt>FPS cap</dt><dd>60, steady</dd>
+						<dt>Minecraft RAM</dt><dd>2 GB</dd>
+					</dl>
+				</div>
+				<div class="preset">
+					<div class="name">Balanced</div>
+					<div class="for">Built-in graphics with 8 GB+ RAM</div>
+					<dl>
+						<dt>Render distance</dt><dd>10 chunks</dd>
+						<dt>FPS cap</dt><dd>120</dd>
+						<dt>Minecraft RAM</dt><dd>3 GB</dd>
+					</dl>
+				</div>
+				<div class="preset">
+					<div class="name">High</div>
+					<div class="for">NVIDIA or AMD graphics, 12 GB+ RAM</div>
+					<dl>
+						<dt>Render distance</dt><dd>16 chunks</dd>
+						<dt>FPS cap</dt><dd>Unlimited</dd>
+						<dt>Minecraft RAM</dt><dd>4 GB</dd>
+					</dl>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section id="screens">
+		<div class="wrap">
+			<div class="section-head">
+				<div class="kicker">Screenshots</div>
+				<h2>Looks as good as it runs</h2>
+			</div>
+			<div class="gallery">
+				<figure>
+					<div class="shot">
+						<img src="/img/menu.png" width="854" height="480" loading="lazy" alt="The Void Client menu with toggles for FPS, CPS, ping, coordinates, keystrokes, smooth zoom and the performance preset">
+					</div>
+					<figcaption>The Void Client menu. Press <kbd>Right Shift</kbd> in game.</figcaption>
+				</figure>
+				<figure>
+					<div class="shot">
+						<picture>
+							<source srcset="/img/installer.webp" type="image/webp">
+							<img src="/img/installer.png" width="560" height="440" loading="lazy" alt="The Void Client installer window with a purple Install button">
+						</picture>
+					</div>
+					<figcaption>The installer. One button, usually done in about a minute.</figcaption>
+				</figure>
+			</div>
+		</div>
+	</section>
+
+	<section id="install">
+		<div class="wrap">
+			<div class="section-head">
+				<div class="kicker">Install</div>
+				<h2>Three steps and you're playing</h2>
+				<p>You need Minecraft: Java Edition and the normal Minecraft Launcher. Void Client adds itself to the launcher you already have.</p>
+			</div>
+			<div class="steps">
+				<div class="step">
+					<h3>Download and open</h3>
+					<p>Get <code>VoidClient-Installer.exe</code> and open it. Close the Minecraft Launcher first.</p>
+				</div>
+				<div class="step">
+					<h3>Press Install</h3>
+					<p>It downloads every mod straight from Modrinth, checks each file, and sets the right RAM for your laptop.</p>
+				</div>
+				<div class="step">
+					<h3>Pick Void Client and play</h3>
+					<p>Open the Minecraft Launcher, choose <strong>Void Client</strong> next to the Play button, and press Play.</p>
+				</div>
+			</div>
+			<div class="install-panel">
+				<div>
+					<h3 style="margin-top:0">For the smoothest FPS</h3>
+					<ul>
+						<li><strong>Plug in the charger.</strong> Laptops slow down on battery.</li>
+						<li><strong>Close Chrome</strong> and other apps, especially on 4 GB laptops.</li>
+						<li><strong>Power mode → Best performance</strong> in Windows Settings → System → Power.</li>
+						<li><strong>Gaming laptop?</strong> If Void Client says it's on built-in graphics, set Java to High performance in Windows Settings → Display → Graphics.</li>
+					</ul>
+				</div>
+				<div class="cta-row" style="justify-content:center">
+					<a class="btn btn-primary btn-big" href="/VoidClient-Installer.exe" download>
+						<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10.5 4.4v7.1H3V5.5Zm0 13 7.5 1.1v-7.1H3v6Zm8.5 1.3L21 21.2V12.5h-9.5v7.3Zm0-15.6v7.3H21V2.8l-9.5 1.4Z"/></svg>
+						Download for Windows
+					</a>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<section id="faq">
+		<div class="wrap">
+			<div class="section-head">
+				<div class="kicker">FAQ</div>
+				<h2>Questions</h2>
+			</div>
+			<div class="faq">
+				<details>
+					<summary>Windows says "Windows protected your PC". Is it safe?</summary>
+					<p>That warning shows for new apps that haven't built up a download history with Microsoft yet. Click <strong>More info</strong>, then <strong>Run anyway</strong>. The installer only adds a Void Client profile to your Minecraft Launcher and downloads mods from Modrinth. Its <a href="https://github.com/TimothyKitson/TechnoClient" rel="noopener">source code is public</a>.</p>
+				</details>
+				<details>
+					<summary>Will I get banned on servers?</summary>
+					<p>It shouldn't get you banned. Void Client has no X-ray, reach, autoclicker, kill aura, fullbright or minimap radar, and it never sends anything to servers. Coordinates hide themselves on servers that turn on reduced debug info. The mods inside are the same kind big servers like Hypixel allow. If a server lists banned mods, give it a quick check.</p>
+				</details>
+				<details>
+					<summary>Does it work on school laptops?</summary>
+					<p>It installs without admin rights, into your own user folder. Some schools block new apps or downloads from certain sites. If the installer can't download, try again on home Wi-Fi.</p>
+				</details>
+				<details>
+					<summary>Where are my worlds and servers?</summary>
+					<p>Void Client keeps its own folder at <code>%APPDATA%\.voidclient</code>, so it never touches your normal Minecraft. Your server list is copied over the first time. To bring a world, copy it from <code>%APPDATA%\.minecraft\saves</code> into <code>%APPDATA%\.voidclient\saves</code>.</p>
+				</details>
+				<details>
+					<summary>How do I update?</summary>
+					<p>Download the newest installer and press Install again. It swaps in new mod versions and leaves your worlds, settings and any extra mods you added alone.</p>
+				</details>
+				<details>
+					<summary>How do I uninstall?</summary>
+					<ol>
+						<li>In the Minecraft Launcher, open <strong>Installations</strong> and delete <strong>Void Client</strong>.</li>
+						<li>Delete the folder <code>%APPDATA%\.voidclient</code> (paste it into the File Explorer address bar).</li>
+					</ol>
+				</details>
+				<details>
+					<summary>I use Prism Launcher or the Modrinth App.</summary>
+					<p>Download the <a href="/VoidClient.mrpack" download>VoidClient.mrpack</a> and import it as a new instance. Set the memory to 2 GB on a 4 GB laptop, 3 GB on 8 GB, or 4 GB on 16 GB.</p>
+				</details>
+			</div>
+		</div>
+	</section>
+
+	<section>
+		<div class="wrap">
+			<div class="final">
+				<img src="/img/icon-512.png" width="84" height="84" alt="">
+				<h2>Ready for smooth FPS?</h2>
+				<p>Free. One installer, a minute or so, and you're in.</p>
+				<a class="btn btn-primary btn-big" href="/VoidClient-Installer.exe" download>
+					<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10.5 4.4v7.1H3V5.5Zm0 13 7.5 1.1v-7.1H3v6Zm8.5 1.3L21 21.2V12.5h-9.5v7.3Zm0-15.6v7.3H21V2.8l-9.5 1.4Z"/></svg>
+					Download Void Client
+				</a>
+			</div>
+			<div style="margin-top:40px">
+				<div class="kicker">Made possible by</div>
+				<div class="credits">
+					<a href="https://modrinth.com/mod/sodium" rel="noopener">Sodium</a>
+					<a href="https://modrinth.com/mod/lithium" rel="noopener">Lithium</a>
+					<a href="https://modrinth.com/mod/ferrite-core" rel="noopener">FerriteCore</a>
+					<a href="https://modrinth.com/mod/immediatelyfast" rel="noopener">ImmediatelyFast</a>
+					<a href="https://modrinth.com/mod/entityculling" rel="noopener">Entity Culling</a>
+					<a href="https://modrinth.com/mod/moreculling" rel="noopener">MoreCulling</a>
+					<a href="https://modrinth.com/mod/dynamic-fps" rel="noopener">Dynamic FPS</a>
+					<a href="https://modrinth.com/plugin/simple-voice-chat" rel="noopener">Simple Voice Chat</a>
+					<a href="https://modrinth.com/mod/fabric-api" rel="noopener">Fabric API</a>
+					<a href="https://modrinth.com/mod/cloth-config" rel="noopener">Cloth Config</a>
+				</div>
+			</div>
+		</div>
+	</section>
+</main>
+
+<footer>
+	<div class="wrap">
+		<p>Void Client is not an official Minecraft product. It is not approved by or associated with Mojang or Microsoft. All mods belong to their authors and are downloaded from Modrinth.</p>
+		<p><a href="https://github.com/TimothyKitson/TechnoClient" rel="noopener">Source code</a> · © 2026 Void Client</p>
+	</div>
+</footer>
+
+<script>
+(function () {
+	var note = document.getElementById("os-note");
+	if (!note) return;
+	var ua = navigator.userAgent || "";
+	var platform = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "";
+	var mobile = /Android|iPhone|iPad|iPod/i.test(ua) || (navigator.userAgentData && navigator.userAgentData.mobile);
+	var windows = /Win/i.test(platform) || /Windows/i.test(ua);
+	if (mobile) {
+		note.textContent = "Void Client is for Minecraft Java on a computer. Open getvoidclient.com on your laptop to download it.";
+		note.classList.add("show");
+	} else if (!windows) {
+		note.innerHTML = "The installer is for Windows. On Mac or Linux, use the <a href=\"/VoidClient.mrpack\" download>.mrpack</a> with Prism Launcher.";
+		note.classList.add("show");
+	}
+})();
+</script>
+</body>
+</html>
