@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -160,6 +161,28 @@ func registerAPI(mux *http.ServeMux, s *Store) {
 	})
 	mux.HandleFunc("/api/packs/play", func(w http.ResponseWriter, r *http.Request) {
 		installHandler(w, r, s, true)
+	})
+
+	mux.HandleFunc("/api/packs/folder", func(w http.ResponseWriter, r *http.Request) {
+		var body struct{ PackID string }
+		if !readJSON(w, r, &body) {
+			return
+		}
+		p := s.find(body.PackID)
+		if p == nil {
+			http.Error(w, "pack not found", http.StatusNotFound)
+			return
+		}
+		modsDir := filepath.Join(s.instanceDir(p), "mods")
+		if err := os.MkdirAll(modsDir, 0o755); err != nil {
+			httpErr(w, err)
+			return
+		}
+		if err := openFolder(modsDir); err != nil {
+			httpErr(w, err)
+			return
+		}
+		writeJSON(w, map[string]any{"ok": true, "path": modsDir})
 	})
 
 	mux.HandleFunc("/api/quit", func(w http.ResponseWriter, r *http.Request) {

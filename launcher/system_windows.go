@@ -34,12 +34,18 @@ func totalRAMMB() uint64 {
 }
 
 func dataDir() string {
-	base := os.Getenv("APPDATA")
+	base := os.Getenv("USERPROFILE")
 	if base == "" {
-		home, _ := os.UserHomeDir()
-		base = home
+		base, _ = os.UserHomeDir()
 	}
-	return filepath.Join(base, "VoidLauncher")
+	if base == "" {
+		base = os.Getenv("APPDATA")
+	}
+	return filepath.Join(base, "VoidClient")
+}
+
+var openFolder = func(path string) error {
+	return exec.Command("explorer", path).Start()
 }
 
 func minecraftDir() string {

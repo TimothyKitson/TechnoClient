@@ -124,6 +124,12 @@ $("#detailCoverFile").addEventListener("change", (e) => {
 	r.readAsDataURL(f);
 });
 $("#detailPlay").addEventListener("click", () => playPack(currentPack));
+$("#detailFolder").addEventListener("click", async () => {
+	try {
+		await api("/api/packs/folder", { method: "POST", body: JSON.stringify({ PackID: currentPack.id }) });
+		toast("Opened " + currentPack.name + "'s mods folder — drop .jar files in here");
+	} catch (err) { toast(err.message, true); }
+});
 
 /* ---------- Browse ---------- */
 const CATS = ["All", "Performance", "Visual", "Utility", "Social", "Library"];

@@ -29,11 +29,18 @@ func totalRAMMB() uint64 {
 }
 
 func dataDir() string {
-	home, _ := os.UserHomeDir()
 	if x := os.Getenv("VOID_DATA_DIR"); x != "" {
 		return x
 	}
-	return filepath.Join(home, ".voidlauncher")
+	home, _ := os.UserHomeDir()
+	return filepath.Join(home, "VoidClient")
+}
+
+var openFolder = func(path string) error {
+	if err := exec.Command("xdg-open", path).Start(); err == nil {
+		return nil
+	}
+	return exec.Command("open", path).Start()
 }
 
 func minecraftDir() string {

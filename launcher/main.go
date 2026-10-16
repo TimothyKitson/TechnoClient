@@ -43,10 +43,7 @@ func main() {
 	}()
 
 	fmt.Println("Void Launcher running at", url)
-	openInApp(url)
-
-	// Keep running until the process is closed.
-	select {}
+	runWindow(url)
 }
 
 func logRequests(h http.Handler) http.Handler {

@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 )
@@ -42,11 +43,12 @@ func installToMinecraft(s *Store, p *Pack, progress progressFn) error {
 		return fmt.Errorf("setting up Fabric: %w", err)
 	}
 
-	gameDir := s.instanceDir(p.ID)
+	gameDir := s.instanceDir(p)
 	modsDir := filepath.Join(gameDir, "mods")
 	if err := os.MkdirAll(modsDir, 0o755); err != nil {
 		return err
 	}
+	managed := readManaged(gameDir)
 
 	var total int64 = 1
 	for _, m := range p.Mods {
@@ -79,14 +81,12 @@ func installToMinecraft(s *Store, p *Pack, progress progressFn) error {
 		}
 		done += m.Size
 	}
-	// Remove mods no longer in the pack.
-	if entries, err := os.ReadDir(modsDir); err == nil {
-		for _, e := range entries {
-			if !keep[e.Name()] && strings.HasSuffix(e.Name(), ".jar") {
-				os.Remove(filepath.Join(modsDir, e.Name()))
-			}
+	for _, name := range managed {
+		if !keep[name] {
+			os.Remove(filepath.Join(modsDir, name))
 		}
 	}
+	writeManaged(gameDir, keep)
 
 	progress(0.97, "Adding to the Minecraft Launcher")
 	for _, pf := range profiles {
@@ -306,4 +306,25 @@ func writeAtomic(path string, data []byte) error {
 		return err
 	}
 	return os.Rename(tmp, path)
+}
+
+const managedName = ".voidlauncher-mods.json"
+
+func readManaged(gameDir string) []string {
+	var names []string
+	if data, err := os.ReadFile(filepath.Join(gameDir, managedName)); err == nil {
+		json.Unmarshal(data, &names)
+	}
+	return names
+}
+
+func writeManaged(gameDir string, keep map[string]bool) {
+	names := make([]string, 0, len(keep))
+	for n := range keep {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	if data, err := json.Marshal(names); err == nil {
+		writeAtomic(filepath.Join(gameDir, managedName), data)
+	}
 }

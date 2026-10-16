@@ -38,6 +38,7 @@ type Pack struct {
 	Loader  string    `json:"loader"`
 	RAMMb   int       `json:"ramMb"`
 	Cover   string    `json:"cover"` // data URL, or "" for default
+	Dir     string    `json:"dir"`
 	Mods    []Mod     `json:"mods"`
 	Created time.Time `json:"created"`
 }
@@ -126,12 +127,48 @@ func (s *Store) createPack(name, mc, loader, cover string) *Pack {
 		Loader:  loader,
 		RAMMb:   s.ramForThisPC(),
 		Cover:   cover,
+		Dir:     s.uniqueFolderLocked(folderName(name)),
 		Mods:    []Mod{},
 		Created: time.Now().UTC(),
 	}
 	s.Packs = append(s.Packs, p)
 	s.save()
 	return p
+}
+
+func folderName(name string) string {
+	var b strings.Builder
+	for _, r := range strings.TrimSpace(name) {
+		switch r {
+		case '\\', '/', ':', '*', '?', '"', '<', '>', '|':
+		default:
+			if r >= 32 {
+				b.WriteRune(r)
+			}
+		}
+	}
+	out := strings.TrimRight(strings.TrimSpace(b.String()), ". ")
+	if out == "" {
+		out = "Pack"
+	}
+	if len(out) > 60 {
+		out = strings.TrimSpace(out[:60])
+	}
+	return out
+}
+
+func (s *Store) uniqueFolderLocked(base string) string {
+	taken := map[string]bool{}
+	for _, p := range s.Packs {
+		if p.Dir != "" {
+			taken[strings.ToLower(p.Dir)] = true
+		}
+	}
+	candidate := base
+	for i := 2; taken[strings.ToLower(candidate)]; i++ {
+		candidate = fmt.Sprintf("%s %d", base, i)
+	}
+	return candidate
 }
 
 func voidClientMod() Mod {
@@ -168,15 +205,20 @@ func (s *Store) createFpsPack() (*Pack, error) {
 func (s *Store) deletePack(id string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	var removed *Pack
 	out := s.Packs[:0]
 	for _, p := range s.Packs {
-		if p.ID != id {
-			out = append(out, p)
+		if p.ID == id {
+			removed = p
+			continue
 		}
+		out = append(out, p)
 	}
 	s.Packs = out
 	s.save()
-	os.RemoveAll(s.instanceDir(id))
+	if removed != nil {
+		os.RemoveAll(s.instanceDir(removed))
+	}
 }
 
 // addMod resolves the best compatible version and adds it, pulling in required deps.
@@ -259,8 +301,16 @@ func (s *Store) setRunMode(mode string) {
 	s.save()
 }
 
-func (s *Store) instanceDir(id string) string {
-	return filepath.Join(dataDir(), "instances", id)
+func modpacksRoot() string {
+	return filepath.Join(dataDir(), "modpacks")
+}
+
+func (s *Store) instanceDir(p *Pack) string {
+	dir := p.Dir
+	if dir == "" {
+		dir = folderName(p.Name)
+	}
+	return filepath.Join(modpacksRoot(), dir)
 }
 
 func sortedPacks(ps []*Pack) []*Pack {
