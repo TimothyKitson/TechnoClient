@@ -24,6 +24,8 @@ cp installer/winres/icon128.png installer/payload/profile-icon.png
 
 cp dist/VoidClient-Installer.exe site/VoidClient-Installer.exe
 cp "dist/VoidClient-$VERSION.mrpack" site/VoidClient.mrpack
+# The web pack builder (site/build.html) bundles this jar into the .mrpack it makes.
+cp "build/libs/voidclient-$VERSION.jar" site/voidclient.jar
 
 # Void Launcher (standalone modpack launcher) — bundles the Void Client jar
 cp "build/libs/voidclient-$VERSION.jar" launcher/bundled/voidclient.jar

@@ -134,38 +134,35 @@ func (s *Store) createPack(name, mc, loader, cover string) *Pack {
 	return p
 }
 
-// createFpsPack builds the one-click "Void FPS Boost" pack: the bundled Void
-// Client mod plus the speed mods from Modrinth (dependencies pulled in too).
-func (s *Store) createFpsPack() (*Pack, error) {
-	s.mu.Lock()
-	p := &Pack{
-		ID:     newID(),
-		Name:   "Void FPS Boost",
-		MC:     "26.3",
-		Loader: "Fabric",
-		RAMMb:  s.ramForThisPC(),
-		Mods: []Mod{{
-			ProjectID:     "voidclient",
-			Name:          "Void Client",
-			Author:        "Timothy Kitson",
-			Category:      "Performance",
-			VersionNumber: voidClientVersion(),
-			Filename:      "voidclient-" + voidClientVersion() + ".jar",
-			Size:          int64(len(voidClientJar)),
-			Bundled:       true,
-		}},
-		Created: time.Now().UTC(),
+func voidClientMod() Mod {
+	return Mod{
+		ProjectID:     "voidclient",
+		Name:          "Void Client",
+		Author:        "Timothy Kitson",
+		Category:      "Performance",
+		VersionNumber: voidClientVersion(),
+		Filename:      "voidclient-" + voidClientVersion() + ".jar",
+		Size:          int64(len(voidClientJar)),
+		Bundled:       true,
 	}
-	s.Packs = append(s.Packs, p)
-	s.save()
-	s.mu.Unlock()
+}
 
-	for _, slug := range fpsPackSlugs {
-		if _, err := s.addMod(p.ID, slug); err != nil {
-			return p, fmt.Errorf("adding %s: %w", slug, err)
-		}
+func (s *Store) createSeededPack(name, mc, loader, cover string) *Pack {
+	p := s.createPack(name, mc, loader, cover)
+	if mc == "26.3" {
+		s.mu.Lock()
+		p.Mods = append([]Mod{voidClientMod()}, p.Mods...)
+		s.save()
+		s.mu.Unlock()
 	}
-	return p, nil
+	for _, slug := range fpsPackSlugs {
+		s.addMod(p.ID, slug)
+	}
+	return p
+}
+
+func (s *Store) createFpsPack() (*Pack, error) {
+	return s.createSeededPack("Void FPS Boost", "26.3", "Fabric", ""), nil
 }
 
 func (s *Store) deletePack(id string) {

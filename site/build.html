@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Void Pack Builder</title>
+<meta name="description" content="Build your own Minecraft modpack in your browser, then download it as an installer that sets it up in your Minecraft Launcher.">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+	--bg:#07040f;--surface:#0e0a1b;--surface-2:#160d2a;--card:#130c24;--card-hover:#1a1030;
+	--line:#271641;--line-bright:#44237a;--purple:#8b5cf6;--purple-bright:#a78bfa;--purple-soft:#c4b5fd;--purple-dim:#6d28d9;
+	--glow:rgba(139,92,246,.35);--text:#f3f0fb;--muted:#b2aac8;--faint:#726889;--good:#4ade80;--bad:#f87171;
+	--display:"Chakra Petch","Segoe UI",system-ui,sans-serif;--body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+	color-scheme:dark;
+}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(820px 460px at 82% -14%,rgba(139,92,246,.16),transparent 62%),radial-gradient(680px 460px at -10% 112%,rgba(109,40,217,.14),transparent 60%)}
+a{color:var(--purple-soft)}
+.topnav{position:sticky;top:0;z-index:20;background:rgba(10,6,20,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.topnav-inner{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:12px max(16px,env(safe-area-inset-left,0px));min-height:60px}
+.brand{display:flex;align-items:center;gap:11px}
+.brand img{width:34px;height:34px;border-radius:9px;display:block}
+.brand b{font-family:var(--display);font-weight:700;letter-spacing:.14em;font-size:15px}
+.brand small{display:block;color:var(--faint);font-size:11px;letter-spacing:.14em;font-weight:600}
+.topnav .right{margin-left:auto}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border-radius:10px;font-family:var(--body);font-size:14px;font-weight:600;border:1px solid transparent;cursor:pointer;white-space:nowrap;text-decoration:none;transition:background .14s,transform .1s,border-color .14s}
+.btn svg{width:17px;height:17px}
+.btn-primary{background:var(--purple);color:#fff;box-shadow:0 8px 22px -10px var(--glow)}
+.btn-primary:hover{background:var(--purple-bright)}
+.btn-primary:active{transform:translateY(1px)}
+.btn-primary:disabled{opacity:.5;cursor:default}
+.btn-ghost{background:var(--surface-2);color:var(--text);border-color:var(--line)}
+.btn-ghost:hover{background:var(--card-hover);border-color:var(--line-bright)}
+.btn-small{padding:7px 13px;font-size:13px;border-radius:8px}
+.page{position:relative;z-index:1;max-width:1180px;margin:0 auto;padding:24px max(16px,env(safe-area-inset-left,0px)) 56px;display:grid;grid-template-columns:400px 1fr;gap:22px;align-items:start}
+.panel{border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,var(--card),var(--surface));padding:20px;position:sticky;top:84px}
+h1{font-family:var(--display);font-weight:700;font-size:22px;margin:0 0 4px;letter-spacing:.01em}
+.sub{color:var(--muted);font-size:13.5px;margin:0 0 18px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:6px;font-weight:600}
+.field input,.field select{width:100%;padding:10px 12px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line);color:var(--text);font-family:var(--body);font-size:14px;outline:none}
+.field input:focus,.field select:focus{border-color:var(--purple-dim)}
+.your-mods{display:flex;flex-direction:column;gap:8px;max-height:46vh;overflow:auto;margin:6px -6px 2px;padding:0 6px}
+.ym{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:8px 10px}
+.ym .ic{width:34px;height:34px;border-radius:8px;overflow:hidden;background:var(--surface-2);display:grid;place-items:center}
+.ym .ic img{width:100%;height:100%;object-fit:cover;display:block}
+.ym .ic span{font-family:var(--display);font-weight:700;color:#fff;font-size:14px}
+.ym h4{margin:0;font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ym .meta{color:var(--faint);font-size:11.5px}
+.ym .x{background:none;border:0;color:var(--faint);cursor:pointer;font-size:18px;line-height:1;padding:4px}
+.ym .x:hover{color:var(--bad)}
+.readd{display:flex;align-items:center;gap:8px;justify-content:center;margin-top:2px;padding:9px;border-radius:10px;border:1px dashed var(--line-bright);background:none;color:var(--purple-soft);font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+.readd:hover{background:rgba(139,92,246,.1)}
+.readd span{font-size:16px;line-height:1}
+.pill-dep{font-family:var(--mono);font-size:10px;color:var(--faint);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+.count{color:var(--faint);font-size:12.5px;margin:10px 0 14px}
+.dl-row{display:flex;flex-direction:column;gap:9px}
+.fine{color:var(--faint);font-size:12px;margin:8px 0 0;text-align:center}
+.browse h2{font-family:var(--display);font-weight:600;font-size:18px;margin:0 0 12px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.search{flex:1;min-width:200px;display:flex;align-items:center;gap:9px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px 13px}
+.search svg{width:17px;height:17px;color:var(--faint)}
+.search input{border:0;background:transparent;color:var(--text);font:inherit;width:100%;outline:none}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.pill{padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);color:var(--muted);font-size:12.5px;font-weight:500;cursor:pointer}
+.pill.on{background:rgba(139,92,246,.16);border-color:var(--purple-dim);color:var(--purple-bright)}
+.pill:hover{color:var(--text)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.mod{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:13px;display:flex;flex-direction:column;gap:9px}
+.mod:hover{border-color:var(--line-bright);background:var(--card-hover)}
+.mod .top{display:flex;gap:11px;align-items:center}
+.mod .ic{width:44px;height:44px;border-radius:10px;overflow:hidden;background:var(--surface-2);flex:none;display:grid;place-items:center}
+.mod .ic img{width:100%;height:100%;object-fit:cover;display:block}
+.mod .ic span{font-family:var(--display);font-weight:700;color:#fff;font-size:17px}
+.mod h3{margin:0;font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mod .by{color:var(--faint);font-size:12px}
+.mod p{margin:0;color:var(--muted);font-size:13px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;min-height:2.6em}
+.mod .foot{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+.mod .dls{color:var(--faint);font-size:11.5px;font-family:var(--mono)}
+.addbtn.added{background:var(--surface-2);color:var(--good);border-color:var(--line-bright);cursor:default}
+.msg{color:var(--faint);padding:20px;grid-column:1/-1}
+.msg.bad{color:var(--bad)}
+.toast-wrap{position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{display:flex;align-items:center;gap:9px;background:var(--surface-2);border:1px solid var(--line-bright);color:var(--text);padding:11px 16px;border-radius:10px;font-size:13.5px;box-shadow:0 16px 40px -16px #000;animation:rise .2s ease-out}
+.toast svg{width:17px;height:17px;color:var(--good)}
+@keyframes rise{from{transform:translateY(10px);opacity:0}}
+@media (max-width:860px){.page{grid-template-columns:1fr}.panel{position:static}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+	<div class="topnav-inner">
+		<a class="brand" href="/" style="text-decoration:none;color:inherit"><img src="/img/favicon-32.png" width="34" height="34" alt=""><span><b>VOID</b><small>PACK BUILDER</small></span></a>
+		<a class="btn btn-ghost right" href="/">Back to site</a>
+	</div>
+</nav>
+
+<main class="page">
+	<section class="panel">
+		<h1>Your pack</h1>
+		<p class="sub">Name it, pick a version, add mods. Then download it as your own installer.</p>
+		<div class="field"><label for="packName">Pack name</label><input id="packName" value="My Pack" maxlength="40"></div>
+		<div class="field"><label for="mcVer">Minecraft version</label><select id="mcVer"></select></div>
+		<div class="count" id="count"></div>
+		<div class="your-mods" id="yourMods"></div>
+		<div class="dl-row" style="margin-top:16px">
+			<button class="btn btn-primary" id="dlExe"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 5.5 10.5 4.4v7.1H3V5.5Zm0 13 7.5 1.1v-7.1H3v6Zm8.5 1.3L21 21.2V12.5h-9.5v7.3Zm0-15.6v7.3H21V2.8l-9.5 1.4Z"/></svg><span id="dlExeLabel">Download My Pack.exe</span></button>
+			<button class="btn btn-ghost" id="dlMrpack">Download .mrpack (for Prism)</button>
+		</div>
+		<p class="fine">The .exe installs your pack into the Minecraft Launcher, just like the FPS Booster.</p>
+	</section>
+
+	<section class="browse">
+		<h2>Add mods from Modrinth</h2>
+		<div class="toolbar">
+			<label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg><input id="q" placeholder="Search mods…"></label>
+		</div>
+		<div class="pills" id="pills"></div>
+		<div class="grid" id="results"><div class="msg">Loading mods…</div></div>
+	</section>
+</main>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+const API = "https://api.modrinth.com/v2";
+const UA = "TimothyKitson/TechnoClient void-pack-builder";
+const $ = (s) => document.querySelector(s);
+const el = (t, c) => { const e = document.createElement(t); if (c) e.className = c; return e; };
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+const DEFAULT_SLUGS = ["sodium", "lithium", "ferrite-core", "immediatelyfast", "entityculling", "moreculling", "dynamic-fps", "simple-voice-chat"];
+const CATS = ["All", "performance", "optimization", "utility", "social", "worldgen", "adventure"];
+
+let state = { mc: "26.3", mods: new Map(), includeVoidClient: true };
+let activeCat = "All";
+let projectCache = new Map();
+
+async function mj(path) {
+	const r = await fetch(API + path, { headers: { "User-Agent": UA } });
+	if (!r.ok) throw new Error("Modrinth " + r.status);
+	return r.json();
+}
+async function mProject(id) {
+	if (projectCache.has(id)) return projectCache.get(id);
+	const p = await mj("/project/" + id);
+	projectCache.set(id, p); projectCache.set(p.id, p);
+	return p;
+}
+async function mBestVersion(id, mc) {
+	const q = `game_versions=["${mc}"]&loaders=["fabric"]`;
+	const list = await mj("/project/" + id + "/version?" + encodeURI(q));
+	const rank = { release: 3, beta: 2, alpha: 1 };
+	let best = null;
+	for (const v of list) { if (rank[v.version_type] && (!best || rank[v.version_type] > rank[best.version_type])) best = v; }
+	return best;
+}
+
+async function addMod(id, dep, knownTitle, knownIcon) {
+	if (state.mods.has(id)) return 0;
+	const v = await mBestVersion(id, state.mc);
+	if (!v) { if (!dep) throw new Error("No version for Minecraft " + state.mc); return 0; }
+	let title = knownTitle, icon = knownIcon, slug = id;
+	if (!title) { const p = await mProject(id); title = p.title; icon = p.icon_url; slug = p.slug; }
+	const f = v.files.find((x) => x.primary) || v.files[0];
+	state.mods.set(v.project_id, {
+		projectId: v.project_id, slug, name: title, iconUrl: icon, dep: !!dep,
+		versionNumber: v.version_number, filename: f.filename, url: f.url, sha512: f.hashes.sha512, size: f.size,
+	});
+	let n = 1;
+	for (const d of v.dependencies || []) {
+		if (d.dependency_type === "required" && d.project_id) n += await addMod(d.project_id, true);
+	}
+	return n;
+}
+
+function renderYourMods() {
+	const box = $("#yourMods"); box.innerHTML = "";
+	if (state.includeVoidClient) {
+		const row = el("div", "ym");
+		row.innerHTML = `<div class="ic"><span>V</span></div><div style="min-width:0"><h4>Void Client</h4><div class="meta">FPS boost · HUD · zoom · outlines</div></div><button class="x" title="Remove">&times;</button>`;
+		row.querySelector(".x").addEventListener("click", () => { state.includeVoidClient = false; renderYourMods(); });
+		box.appendChild(row);
+	}
+	for (const m of state.mods.values()) {
+		const row = el("div", "ym");
+		row.innerHTML = `<div class="ic">${m.iconUrl ? `<img src="${esc(m.iconUrl)}" alt="">` : `<span>${esc((m.name||"?")[0])}</span>`}</div>
+			<div style="min-width:0"><h4>${esc(m.name)}</h4><div class="meta">${esc(m.versionNumber)}${m.dep ? " · dependency" : ""}</div></div>
+			<button class="x" title="Remove">&times;</button>`;
+		row.querySelector(".x").addEventListener("click", () => { state.mods.delete(m.projectId); renderYourMods(); renderResults(); });
+		box.appendChild(row);
+	}
+	if (!state.includeVoidClient && state.mc === "26.3") {
+		const add = el("button", "readd");
+		add.innerHTML = `<span>+</span> Add Void Client back`;
+		add.addEventListener("click", () => { state.includeVoidClient = true; renderYourMods(); });
+		box.appendChild(add);
+	}
+	const total = state.mods.size + (state.includeVoidClient ? 1 : 0);
+	$("#count").textContent = total + " mod" + (total === 1 ? "" : "s") + " in this pack";
+}
+
+let results = [];
+async function runSearch() {
+	const box = $("#results"); box.innerHTML = `<div class="msg">Searching…</div>`;
+	const facets = [["project_type:mod"], ["versions:" + state.mc], ["categories:fabric"]];
+	if (activeCat !== "All") facets.push(["categories:" + activeCat]);
+	const q = new URLSearchParams({ query: $("#q").value.trim(), facets: JSON.stringify(facets), limit: "40", index: "relevance" });
+	try { const r = await mj("/search?" + q.toString()); results = r.hits; }
+	catch (e) { box.innerHTML = `<div class="msg bad">${esc(e.message)}</div>`; return; }
+	renderResults();
+}
+function renderResults() {
+	const box = $("#results"); box.innerHTML = "";
+	if (!results.length) { box.innerHTML = `<div class="msg">No mods found.</div>`; return; }
+	for (const h of results) {
+		const inPack = state.mods.has(h.project_id);
+		const card = el("div", "mod");
+		card.innerHTML = `<div class="top"><div class="ic">${h.icon_url ? `<img src="${esc(h.icon_url)}" alt="">` : `<span>${esc((h.title||"?")[0])}</span>`}</div>
+			<div style="min-width:0"><h3>${esc(h.title)}</h3><div class="by">by ${esc(h.author)}</div></div></div>
+			<p>${esc(h.description)}</p>
+			<div class="foot"><span class="dls">⬇ ${fmt(h.downloads)}</span>
+			${inPack ? `<button class="btn btn-small addbtn added">✓ Added</button>` : `<button class="btn btn-primary btn-small addbtn">+ Add</button>`}</div>`;
+		if (!inPack) card.querySelector(".addbtn").addEventListener("click", async (ev) => {
+			const b = ev.currentTarget; b.disabled = true; b.textContent = "Adding…";
+			try { const n = await addMod(h.project_id, false, h.title, h.icon_url); renderYourMods(); renderResults(); toast(h.title + " added" + (n > 1 ? " (+" + (n - 1) + " dep)" : "")); }
+			catch (e) { toast(e.message, true); b.disabled = false; b.textContent = "+ Add"; }
+		});
+		box.appendChild(card);
+	}
+}
+function fmt(n) { return n >= 1e6 ? (n/1e6).toFixed(1)+"M" : n >= 1e3 ? (n/1e3).toFixed(1)+"K" : String(n||0); }
+
+async function seedDefault() {
+	$("#results").innerHTML = `<div class="msg">Loading mods…</div>`;
+	state.mods.clear();
+	state.includeVoidClient = (state.mc === "26.3");
+	for (const slug of DEFAULT_SLUGS) {
+		try { await addMod(slug, false); } catch {}
+	}
+	renderYourMods();
+	await runSearch();
+}
+
+function packName() { return ($("#packName").value.trim() || "My Pack").slice(0, 40); }
+function safeFile(name) { return name.replace(/[\\/:*?"<>|]+/g, " ").trim() || "My Pack"; }
+
+function buildPackJSON() {
+	return {
+		name: packName(), mc: state.mc, loader: "Fabric", ramMb: 0,
+		includeVoidClient: state.includeVoidClient,
+		mods: [...state.mods.values()].map((m) => ({ name: m.name, filename: m.filename, url: m.url, sha512: m.sha512, size: m.size })),
+	};
+}
+
+function saveBlob(blob, filename) {
+	const a = document.createElement("a");
+	a.href = URL.createObjectURL(blob);
+	a.download = filename;
+	document.body.appendChild(a); a.click();
+	setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+}
+
+$("#dlExe").addEventListener("click", async () => {
+	const btn = $("#dlExe"), label = $("#dlExeLabel"), old = label.textContent;
+	btn.disabled = true; label.textContent = "Preparing…";
+	try {
+		const exe = await (await fetch("/VoidClient-Installer.exe", { cache: "force-cache" })).arrayBuffer();
+		const marker = new TextEncoder().encode("\n<<<VOIDPACK-v1>>>\n");
+		const json = new TextEncoder().encode(JSON.stringify(buildPackJSON()));
+		saveBlob(new Blob([exe, marker, json], { type: "application/octet-stream" }), safeFile(packName()) + ".exe");
+		toast("Downloaded " + safeFile(packName()) + ".exe");
+	} catch (e) { toast("Couldn't build the installer: " + e.message, true); }
+	btn.disabled = false; label.textContent = old;
+});
+
+$("#dlMrpack").addEventListener("click", async () => {
+	try {
+		const files = [];
+		files.push({ name: "modrinth.index.json", data: new TextEncoder().encode(JSON.stringify(await mrpackIndex(), null, "\t")) });
+		if (state.includeVoidClient) {
+			const jar = new Uint8Array(await (await fetch("/voidclient.jar", { cache: "force-cache" })).arrayBuffer());
+			files.push({ name: "overrides/mods/voidclient.jar", data: jar });
+		}
+		saveBlob(new Blob([zipStore(files)], { type: "application/zip" }), safeFile(packName()) + ".mrpack");
+		toast("Downloaded " + safeFile(packName()) + ".mrpack");
+	} catch (e) { toast("Couldn't build the .mrpack: " + e.message, true); }
+});
+
+async function fabricLoaderVersion(mc) {
+	try {
+		const list = await (await fetch("https://meta.fabricmc.net/v2/versions/loader/" + encodeURIComponent(mc))).json();
+		const stable = list.find((e) => e.loader && e.loader.stable);
+		return (stable || list[0]).loader.version;
+	} catch { return null; }
+}
+async function mrpackIndex() {
+	const deps = { minecraft: state.mc };
+	const loader = await fabricLoaderVersion(state.mc);
+	if (loader) deps["fabric-loader"] = loader;
+	return {
+		formatVersion: 1, game: "minecraft", versionId: "1.0.0", name: packName(),
+		summary: "Built with the Void Pack Builder",
+		files: [...state.mods.values()].map((m) => ({
+			path: "mods/" + m.filename, hashes: { sha512: m.sha512 },
+			env: { client: "required", server: "unsupported" }, downloads: [m.url], fileSize: m.size,
+		})),
+		dependencies: deps,
+	};
+}
+
+function zipStore(files) {
+	const enc = new TextEncoder();
+	const chunks = [], central = [];
+	let offset = 0;
+	const u16 = (n) => [n & 255, (n >> 8) & 255];
+	const u32 = (n) => [n & 255, (n >> 8) & 255, (n >> 16) & 255, (n >>> 24) & 255];
+	for (const f of files) {
+		const nameBytes = enc.encode(f.name);
+		const crc = crc32(f.data);
+		const local = [].concat([0x50, 0x4b, 3, 4], u16(20), u16(0), u16(0), u16(0), u16(0), u32(crc), u32(f.data.length), u32(f.data.length), u16(nameBytes.length), u16(0));
+		chunks.push(new Uint8Array(local), nameBytes, f.data);
+		central.push({ crc, len: f.data.length, nameBytes, offset });
+		offset += local.length + nameBytes.length + f.data.length;
+	}
+	const cdStart = offset;
+	for (const c of central) {
+		const h = [].concat([0x50, 0x4b, 1, 2], u16(20), u16(20), u16(0), u16(0), u16(0), u16(0), u32(c.crc), u32(c.len), u32(c.len), u16(c.nameBytes.length), u16(0), u16(0), u16(0), u16(0), u32(0), u32(c.offset));
+		chunks.push(new Uint8Array(h), c.nameBytes);
+		offset += h.length + c.nameBytes.length;
+	}
+	const end = [].concat([0x50, 0x4b, 5, 6], u16(0), u16(0), u16(central.length), u16(central.length), u32(offset - cdStart), u32(cdStart), u16(0));
+	chunks.push(new Uint8Array(end));
+	return new Blob(chunks);
+}
+const CRC_TABLE = (() => { const t = new Uint32Array(256); for (let i = 0; i < 256; i++) { let c = i; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; t[i] = c; } return t; })();
+function crc32(bytes) { let c = 0xffffffff; for (let i = 0; i < bytes.length; i++) c = CRC_TABLE[(c ^ bytes[i]) & 255] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; }
+
+function toast(msg, bad) {
+	const t = el("div", "toast");
+	t.innerHTML = (bad ? `<svg viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg>`) + "<span>" + esc(msg) + "</span>";
+	$("#toastWrap").appendChild(t);
+	setTimeout(() => { t.style.transition = "opacity .3s,transform .3s"; t.style.opacity = "0"; t.style.transform = "translateY(8px)"; setTimeout(() => t.remove(), 300); }, bad ? 4200 : 2200);
+}
+
+$("#packName").addEventListener("input", () => { $("#dlExeLabel").textContent = "Download " + safeFile(packName()) + ".exe"; });
+let st;
+$("#q").addEventListener("input", () => { clearTimeout(st); st = setTimeout(runSearch, 350); });
+$("#mcVer").addEventListener("change", async () => { state.mc = $("#mcVer").value; await seedDefault(); toast("Reset to defaults for " + state.mc); });
+
+(async function boot() {
+	const pills = $("#pills");
+	CATS.forEach((c) => { const b = el("button", "pill" + (c === "All" ? " on" : "")); b.textContent = c === "All" ? "All" : c[0].toUpperCase() + c.slice(1); b.addEventListener("click", () => { activeCat = c; [...pills.children].forEach((x) => x.classList.toggle("on", x === b)); runSearch(); }); pills.appendChild(b); });
+	let versions = ["26.3"];
+	try { const g = await (await fetch("https://meta.fabricmc.net/v2/versions/game")).json(); versions = g.filter((v) => v.stable).map((v) => v.version).slice(0, 12); } catch {}
+	if (!versions.includes("26.3")) versions.unshift("26.3");
+	$("#mcVer").innerHTML = versions.map((v) => `<option${v === "26.3" ? " selected" : ""}>${esc(v)}</option>`).join("");
+	state.mc = "26.3";
+	$("#dlExeLabel").textContent = "Download " + safeFile(packName()) + ".exe";
+	await seedDefault();
+})();
+</script>
+</body>
+</html>

@@ -40,18 +40,28 @@ type plan struct {
 	MinecraftDir string
 	GameDir      string
 	TotalRAMMB   uint64
+	Pack         *overlayPack // nil = the default FPS booster
+	ProfileKey   string
+	ProfileName  string
 }
 
-func defaultPlan() plan {
+func appdataBase() string {
 	base := os.Getenv("APPDATA")
 	if base == "" {
 		home, _ := os.UserHomeDir()
 		base = home
 	}
+	return base
+}
+
+func defaultPlan() plan {
+	base := appdataBase()
 	return plan{
 		MinecraftDir: filepath.Join(base, ".minecraft"),
 		GameDir:      filepath.Join(base, ".voidclient"),
 		TotalRAMMB:   totalRAMMB(),
+		ProfileKey:   "voidclient",
+		ProfileName:  "Void Client",
 	}
 }
 
@@ -89,13 +99,35 @@ func install(p plan, progress progressFunc) error {
 	if len(profiles) == 0 {
 		return errNoLauncher
 	}
-	lock, err := loadLock()
-	if err != nil {
-		return fmt.Errorf("reading mod list: %w", err)
+
+	var mods []lockedMod
+	var profileJSON []byte
+	includeVoidClient := true
+	if p.Pack != nil {
+		for _, m := range p.Pack.Mods {
+			mods = append(mods, lockedMod{Project: m.Name, Path: "mods/" + m.Filename, URL: m.URL, Sha512: m.Sha512, Size: m.Size})
+		}
+		pj, err := fetchFabricProfile(p.Pack.MC)
+		if err != nil {
+			return fmt.Errorf("Couldn't set up Fabric for Minecraft %s: %w", p.Pack.MC, err)
+		}
+		profileJSON = pj
+		includeVoidClient = p.Pack.IncludeVoidClient
+	} else {
+		lock, err := loadLock()
+		if err != nil {
+			return fmt.Errorf("reading mod list: %w", err)
+		}
+		mods = lock.Mods
+		pj, err := payload.ReadFile("payload/fabric-profile.json")
+		if err != nil {
+			return err
+		}
+		profileJSON = pj
 	}
 
 	progress(0.02, "Setting up Fabric")
-	versionID, err := writeFabricVersion(p.MinecraftDir)
+	versionID, err := writeFabricVersion(p.MinecraftDir, profileJSON)
 	if err != nil {
 		return fmt.Errorf("Couldn't set up Fabric in the Minecraft folder: %w", err)
 	}
@@ -106,17 +138,17 @@ func install(p plan, progress progressFunc) error {
 	}
 	previous := readManifest(p.GameDir)
 
-	var total int64
-	for _, mod := range lock.Mods {
+	var total int64 = 1
+	for _, mod := range mods {
 		total += mod.Size
 	}
 	var done int64
-	installed := make([]string, 0, len(lock.Mods)+1)
-	for _, mod := range lock.Mods {
+	installed := make([]string, 0, len(mods)+1)
+	for _, mod := range mods {
 		name := filepath.Base(mod.Path)
 		installed = append(installed, name)
 		target := filepath.Join(modsDir, name)
-		label := fmt.Sprintf("Downloading %s %s", mod.Project, mod.Version)
+		label := "Downloading " + mod.Project
 		if fileMatches(target, mod.Sha512) {
 			done += mod.Size
 			progress(0.05+0.85*float64(done)/float64(total), label)
@@ -132,16 +164,18 @@ func install(p plan, progress progressFunc) error {
 		done += mod.Size
 	}
 
-	progress(0.92, "Installing Void Client")
-	jarName := "voidclient-" + clientVersion() + ".jar"
-	jar, err := payload.ReadFile("payload/voidclient.jar")
-	if err != nil {
-		return err
+	if includeVoidClient {
+		progress(0.92, "Installing Void Client")
+		jarName := "voidclient-" + clientVersion() + ".jar"
+		jar, err := payload.ReadFile("payload/voidclient.jar")
+		if err != nil {
+			return err
+		}
+		if err := writeAtomic(filepath.Join(modsDir, jarName), jar); err != nil {
+			return err
+		}
+		installed = append(installed, jarName)
 	}
-	if err := writeAtomic(filepath.Join(modsDir, jarName), jar); err != nil {
-		return err
-	}
-	installed = append(installed, jarName)
 
 	keep := make(map[string]bool, len(installed))
 	for _, name := range installed {
@@ -157,21 +191,17 @@ func install(p plan, progress progressFunc) error {
 	}
 	copyIfMissing(filepath.Join(p.MinecraftDir, "servers.dat"), filepath.Join(p.GameDir, "servers.dat"))
 
-	progress(0.96, "Adding Void Client to the Minecraft Launcher")
+	progress(0.96, "Adding "+p.ProfileName+" to the Minecraft Launcher")
 	for _, path := range profiles {
 		if err := addProfile(path, versionID, p); err != nil {
-			return fmt.Errorf("Couldn't add Void Client to the Minecraft Launcher: %w", err)
+			return fmt.Errorf("Couldn't add %s to the Minecraft Launcher: %w", p.ProfileName, err)
 		}
 	}
 	progress(1, "Installed")
 	return nil
 }
 
-func writeFabricVersion(minecraftDir string) (string, error) {
-	data, err := payload.ReadFile("payload/fabric-profile.json")
-	if err != nil {
-		return "", err
-	}
+func writeFabricVersion(minecraftDir string, data []byte) (string, error) {
 	var version struct {
 		ID string `json:"id"`
 	}
@@ -215,19 +245,19 @@ func addProfile(path, versionID string, p plan) error {
 		root["profiles"] = profiles
 	}
 	now := time.Now().UTC().Format("2006-01-02T15:04:05.000Z")
-	profile, _ := profiles[profileKey].(map[string]any)
+	profile, _ := profiles[p.ProfileKey].(map[string]any)
 	if profile == nil {
 		profile = map[string]any{"created": now}
 	}
 	icon, _ := payload.ReadFile("payload/profile-icon.png")
-	profile["name"] = "Void Client"
+	profile["name"] = p.ProfileName
 	profile["type"] = "custom"
 	profile["lastUsed"] = now
 	profile["lastVersionId"] = versionID
 	profile["gameDir"] = p.GameDir
 	profile["javaArgs"] = javaArgs(p.TotalRAMMB)
 	profile["icon"] = "data:image/png;base64," + base64.StdEncoding.EncodeToString(icon)
-	profiles[profileKey] = profile
+	profiles[p.ProfileKey] = profile
 	out, err := json.MarshalIndent(root, "", "  ")
 	if err != nil {
 		return err

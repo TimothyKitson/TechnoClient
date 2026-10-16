@@ -464,6 +464,14 @@ code {
 	border: 1px solid var(--line-strong); border-radius: 999px; padding: 5px 11px;
 }
 @media (max-width: 720px) { .choose { grid-template-columns: 1fr; } }
+.build-banner { display: flex; align-items: center; gap: 20px; margin-top: 18px; padding: 20px 24px; border-radius: 16px; border: 1px solid var(--line); background: linear-gradient(100deg, rgba(139,92,246,0.10), rgba(139,92,246,0.02)); text-decoration: none; color: inherit; transition: border-color .15s, transform .1s; }
+.build-banner:hover { border-color: var(--line-strong); }
+.build-banner .choose-ic { flex: none; }
+.build-banner-text { flex: 1; min-width: 0; }
+.build-banner-text h3 { margin: 0 0 4px; font-size: 19px; }
+.build-banner-text p { margin: 0; color: var(--text-muted); font-size: 14.5px; }
+.build-banner .btn { flex: none; }
+@media (max-width: 720px) { .build-banner { flex-direction: column; align-items: flex-start; } .build-banner .btn { align-self: stretch; text-align: center; justify-content: center; } }
 
 .final {
 	text-align: center;
@@ -546,6 +554,7 @@ footer p { margin: 0; max-width: 46em; }
 		<nav class="nav-links" aria-label="Main">
 			<a href="#features">Features</a>
 			<a href="#get">Download</a>
+			<a href="/build.html">Build a pack</a>
 			<a href="#install">Install</a>
 			<a href="#faq">FAQ</a>
 			<a class="btn btn-primary btn-small" href="#get">Get Void</a>
@@ -612,6 +621,14 @@ footer p { margin: 0; max-width: 46em; }
 					<p class="fine">~7 MB · <a href="/launcher.html">try the clickable preview</a> · standalone mode coming soon</p>
 				</article>
 			</div>
+			<a class="build-banner" href="/build.html">
+				<div class="choose-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
+				<div class="build-banner-text">
+					<h3>Don't want a download? Build your own pack right here</h3>
+					<p>Search mods, pick your version, name it — it comes with Void Client and the FPS boost already in (remove them if you want). Then download it as <strong>your&nbsp;name.exe</strong> that installs straight into Minecraft, just like the FPS Booster.</p>
+				</div>
+				<span class="btn btn-ghost btn-big">Open the pack builder</span>
+			</a>
 		</div>
 	</section>
 

@@ -484,8 +484,8 @@ func (w *installerWindow) paint(hwnd uintptr) {
 	if w.bigIcon != 0 {
 		procDrawIconEx.Call(mem, uintptr((width-iconSize)/2), uintptr(w.px(36)), w.bigIcon, uintptr(iconSize), uintptr(iconSize), 0, 0, diNormal)
 	}
-	w.text(mem, "VOID CLIENT", rect{0, w.px(110), width, w.px(152)}, w.font("Segoe UI", 30, 800), colorTitle, dtCenter|dtSingleLine|dtVCenter)
-	w.text(mem, "Minecraft 26.3  ·  FPS boost  ·  HUD  ·  Zoom  ·  Voice chat", rect{0, w.px(152), width, w.px(176)}, w.font("Segoe UI", 13, 400), colorMuted, dtCenter|dtSingleLine|dtVCenter)
+	w.text(mem, uiTitle, rect{0, w.px(110), width, w.px(152)}, w.font("Segoe UI", 30, 800), colorTitle, dtCenter|dtSingleLine|dtVCenter)
+	w.text(mem, uiSubtitle, rect{0, w.px(152), width, w.px(176)}, w.font("Segoe UI", 13, 400), colorMuted, dtCenter|dtSingleLine|dtVCenter)
 
 	card := rect{w.px(60), w.px(196), width - w.px(60), w.px(266)}
 	roundRect(mem, card, w.px(14), colorCard, colorBorder, w.px(1))

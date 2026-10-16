@@ -93,7 +93,7 @@ func registerAPI(mux *http.ServeMux, s *Store) {
 		if body.Loader == "" {
 			body.Loader = "Fabric"
 		}
-		writeJSON(w, s.createPack(body.Name, body.MC, body.Loader, body.Cover))
+		writeJSON(w, s.createSeededPack(body.Name, body.MC, body.Loader, body.Cover))
 	})
 
 	mux.HandleFunc("/api/packs/fps", func(w http.ResponseWriter, r *http.Request) {

@@ -207,7 +207,7 @@ function openNewPack() {
 	scrim.innerHTML =
 		`<div class="modal" role="dialog" aria-modal="true">
 			<h2>Create a modpack</h2>
-			<p class="lead">Pick a Minecraft version and loader. Only mods that fit can be added.</p>
+			<p class="lead">Pick a Minecraft version and loader. It comes with Void Client and the FPS boost mods already in — remove any you don't want.</p>
 			<div class="field"><label for="np-name">Pack name</label><input id="np-name" value="My Awesome Pack"></div>
 			<div class="two">
 				<div class="field"><label for="np-mc">Minecraft version</label><select id="np-mc">${opts}</select></div>
@@ -230,13 +230,17 @@ function openNewPack() {
 	});
 	scrim.querySelector("#np-create").addEventListener("click", async () => {
 		const name = scrim.querySelector("#np-name").value.trim() || "Untitled Pack";
+		const mc = scrim.querySelector("#np-mc").value;
+		const loader = scrim.querySelector("#np-loader").value;
+		scrim.remove();
+		setBusy('Creating "' + name + '"…\nAdding Void Client and the FPS boost mods.');
 		try {
-			await api("/api/packs/create", { method: "POST", body: JSON.stringify({ Name: name, MC: scrim.querySelector("#np-mc").value, Loader: scrim.querySelector("#np-loader").value, Cover: chosenCover }) });
-			scrim.remove();
+			await api("/api/packs/create", { method: "POST", body: JSON.stringify({ Name: name, MC: mc, Loader: loader, Cover: chosenCover }) });
+			clearBusy();
 			await refresh();
 			show("packs");
-			toast('Created "' + name + '"');
-		} catch (e) { toast(e.message, true); }
+			toast('Created "' + name + '" — comes with the FPS boost, remove what you want');
+		} catch (e) { clearBusy(); await refresh(); toast(e.message, true); }
 	});
 }
 $("#newPackBtn").addEventListener("click", openNewPack);
