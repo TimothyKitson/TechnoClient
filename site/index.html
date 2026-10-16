@@ -444,6 +444,27 @@ code {
 	word-break: break-all;
 }
 
+.choose { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: stretch; }
+.choose-card {
+	position: relative; display: flex; flex-direction: column; gap: 10px; padding: 26px;
+	border-radius: 18px; border: 1px solid var(--line);
+	background: linear-gradient(180deg, var(--bg-card), var(--bg-raised));
+}
+.choose-card.featured { border-color: var(--line-strong); box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.25) inset; }
+.choose-ic { width: 50px; height: 50px; border-radius: 13px; display: grid; place-items: center; background: rgba(139, 92, 246, 0.14); border: 1px solid var(--line-strong); color: var(--purple-soft); }
+.choose-ic svg { width: 26px; height: 26px; }
+.choose-card h3 { margin: 8px 0 0; font-size: 23px; }
+.choose-card .tagline { margin: 0; color: var(--purple-soft); font-weight: 600; font-size: 14px; letter-spacing: 0.02em; }
+.choose-card > p { margin: 0; color: var(--text-muted); }
+.choose-card .btn { margin-top: auto; align-self: flex-start; }
+.choose-card .fine { margin: 2px 0 0; color: var(--text-faint); font-size: 13px; }
+.choose-card .ribbon {
+	position: absolute; top: 18px; right: 18px; font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+	text-transform: uppercase; color: var(--purple-soft); background: rgba(139, 92, 246, 0.14);
+	border: 1px solid var(--line-strong); border-radius: 999px; padding: 5px 11px;
+}
+@media (max-width: 720px) { .choose { grid-template-columns: 1fr; } }
+
 .final {
 	text-align: center;
 	padding: 56px 24px;
@@ -524,10 +545,10 @@ footer p { margin: 0; max-width: 46em; }
 		</a>
 		<nav class="nav-links" aria-label="Main">
 			<a href="#features">Features</a>
+			<a href="#get">Download</a>
 			<a href="#install">Install</a>
 			<a href="#faq">FAQ</a>
-			<a href="/launcher.html">Launcher</a>
-			<a class="btn btn-primary btn-small" href="/VoidClient-Installer.exe" download>Download</a>
+			<a class="btn btn-primary btn-small" href="#get">Get Void</a>
 		</nav>
 	</div>
 </header>
@@ -540,13 +561,13 @@ footer p { margin: 0; max-width: 46em; }
 				<h1>Smooth Minecraft on <span class="glow">any laptop.</span></h1>
 				<p class="lead">Void Client boosts your FPS, stops the random freezes and adds a clean purple HUD, zoom and voice chat. It checks your PC and picks the best settings by itself.</p>
 				<div class="cta-row">
-					<a class="btn btn-primary btn-big" href="/VoidClient-Installer.exe" download>
+					<a class="btn btn-primary btn-big" href="#get">
 						<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10.5 4.4v7.1H3V5.5Zm0 13 7.5 1.1v-7.1H3v6Zm8.5 1.3L21 21.2V12.5h-9.5v7.3Zm0-15.6v7.3H21V2.8l-9.5 1.4Z"/></svg>
 						Download for Windows
 					</a>
 					<a class="btn btn-ghost btn-big" href="#install">How it works</a>
 				</div>
-				<p class="cta-meta">One 6 MB installer · Windows 10 &amp; 11 · No admin needed · <a href="/VoidClient.mrpack" download>.mrpack for Prism / Modrinth App</a></p>
+				<p class="cta-meta">Free · Windows 10 &amp; 11 · No admin needed · Two ways to get it below</p>
 				<p class="os-note" id="os-note" role="status"></p>
 			</div>
 			<div class="shot">
@@ -555,6 +576,41 @@ footer p { margin: 0; max-width: 46em; }
 					<img src="/img/hud.jpg" width="1280" height="720" fetchpriority="high" alt="Minecraft jungle with the Void Client HUD showing clicks per second, coordinates, facing and a purple keystrokes display">
 				</picture>
 				<div class="badge" aria-hidden="true"><strong>11</strong> mods, one installer</div>
+			</div>
+		</div>
+	</section>
+
+	<section id="get">
+		<div class="wrap">
+			<div class="section-head">
+				<div class="kicker">Download</div>
+				<h2>Pick what you want</h2>
+				<p>Two free Windows apps. Both are about 6–7 MB and need no admin rights, so they work on a school laptop.</p>
+			</div>
+			<div class="choose">
+				<article class="choose-card">
+					<div class="choose-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg></div>
+					<h3>FPS Booster</h3>
+					<p class="tagline">The quick win — just make Minecraft fast</p>
+					<p>Adds Void Client to the Minecraft Launcher you already use: a big FPS boost, settings tuned for your PC, the purple HUD, zoom, purple block outlines and voice chat. Install and play.</p>
+					<a class="btn btn-primary btn-big" href="/VoidClient-Installer.exe" download>
+						<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10.5 4.4v7.1H3V5.5Zm0 13 7.5 1.1v-7.1H3v6Zm8.5 1.3L21 21.2V12.5h-9.5v7.3Zm0-15.6v7.3H21V2.8l-9.5 1.4Z"/></svg>
+						Download FPS Booster
+					</a>
+					<p class="fine">~6 MB · also as a <a href="/VoidClient.mrpack" download>.mrpack</a> for Prism / Modrinth App</p>
+				</article>
+				<article class="choose-card featured">
+					<div class="ribbon">Everything</div>
+					<div class="choose-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+					<h3>Void Launcher</h3>
+					<p class="tagline">The full app — modpacks and more</p>
+					<p>Build and manage modpacks, browse mods live from Modrinth (dependencies added for you), and play through your Minecraft Launcher — all in one black-and-purple app. Make your own FPS pack or anything else.</p>
+					<a class="btn btn-primary btn-big" href="/VoidLauncher.exe" download>
+						<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10.5 4.4v7.1H3V5.5Zm0 13 7.5 1.1v-7.1H3v6Zm8.5 1.3L21 21.2V12.5h-9.5v7.3Zm0-15.6v7.3H21V2.8l-9.5 1.4Z"/></svg>
+						Download Void Launcher
+					</a>
+					<p class="fine">~7 MB · <a href="/launcher.html">try the clickable preview</a> · standalone mode coming soon</p>
+				</article>
 			</div>
 		</div>
 	</section>
@@ -763,32 +819,15 @@ footer p { margin: 0; max-width: 46em; }
 		</div>
 	</section>
 
-	<section id="launcher">
-		<div class="wrap">
-			<div class="section-head">
-				<div class="kicker">New</div>
-				<h2>The Void Launcher</h2>
-				<p>A black-and-purple modpack launcher — build packs, browse mods live from Modrinth (dependencies added for you), and play through your Minecraft Launcher. No admin needed. Standalone mode is coming next.</p>
-			</div>
-			<div class="cta-row">
-				<a class="btn btn-primary btn-big" href="/VoidLauncher.exe" download>
-					<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10.5 4.4v7.1H3V5.5Zm0 13 7.5 1.1v-7.1H3v6Zm8.5 1.3L21 21.2V12.5h-9.5v7.3Zm0-15.6v7.3H21V2.8l-9.5 1.4Z"/></svg>
-					Download Void Launcher
-				</a>
-				<a class="btn btn-ghost btn-big" href="/launcher.html">Open the clickable preview</a>
-			</div>
-		</div>
-	</section>
-
 	<section>
 		<div class="wrap">
 			<div class="final">
 				<img src="/img/icon-512.png" width="84" height="84" alt="">
 				<h2>Ready for smooth FPS?</h2>
-				<p>Free. One installer, a minute or so, and you're in.</p>
-				<a class="btn btn-primary btn-big" href="/VoidClient-Installer.exe" download>
+				<p>Free. A minute or so, and you're in — pick the quick FPS Booster or the full Void Launcher.</p>
+				<a class="btn btn-primary btn-big" href="#get">
 					<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 5.5 10.5 4.4v7.1H3V5.5Zm0 13 7.5 1.1v-7.1H3v6Zm8.5 1.3L21 21.2V12.5h-9.5v7.3Zm0-15.6v7.3H21V2.8l-9.5 1.4Z"/></svg>
-					Download Void Client
+					See your options
 				</a>
 			</div>
 			<div style="margin-top:40px">
