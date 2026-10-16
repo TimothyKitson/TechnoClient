@@ -58,6 +58,14 @@ func installToMinecraft(s *Store, p *Pack, progress progressFn) error {
 		keep[m.Filename] = true
 		target := filepath.Join(modsDir, m.Filename)
 		label := fmt.Sprintf("Downloading %s (%d/%d)", m.Name, i+1, len(p.Mods))
+		if m.Bundled {
+			if err := writeAtomic(target, voidClientJar); err != nil {
+				return fmt.Errorf("installing %s: %w", m.Name, err)
+			}
+			done += int64(len(voidClientJar))
+			progress(0.05+0.9*float64(done)/float64(total), label)
+			continue
+		}
 		if fileMatches(target, m.Sha512) {
 			done += m.Size
 			progress(0.05+0.9*float64(done)/float64(total), label)

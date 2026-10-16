@@ -242,6 +242,17 @@ function openNewPack() {
 $("#newPackBtn").addEventListener("click", openNewPack);
 $("#newRow").addEventListener("click", openNewPack);
 
+$("#fpsPackBtn").addEventListener("click", async () => {
+	setBusy("Building the Void FPS Boost pack…\nAdding Void Client and the speed mods.");
+	try {
+		await api("/api/packs/fps", { method: "POST", body: "{}" });
+		clearBusy();
+		await refresh();
+		show("packs");
+		toast("Void FPS Boost pack created — press Play");
+	} catch (e) { clearBusy(); await refresh(); toast(e.message, true); }
+});
+
 /* ---------- Install / Play ---------- */
 let busy = null;
 function setBusy(msg) {

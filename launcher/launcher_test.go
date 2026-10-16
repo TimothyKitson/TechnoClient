@@ -70,3 +70,51 @@ func TestCreateAddInstall(t *testing.T) {
 	}
 	t.Logf("installed %d mods for MC %s", len(jars), p.MC)
 }
+
+// The one-click Void FPS Boost pack must include the bundled Void Client jar
+// plus the speed mods, and install them all.
+func TestFpsPack(t *testing.T) {
+	tmp := t.TempDir()
+	t.Setenv("VOID_DATA_DIR", filepath.Join(tmp, "data"))
+	t.Setenv("VOID_MC_DIR", filepath.Join(tmp, ".minecraft"))
+	os.MkdirAll(filepath.Join(tmp, ".minecraft"), 0o755)
+	os.WriteFile(filepath.Join(tmp, ".minecraft", "launcher_profiles.json"), []byte(`{"profiles":{},"version":3}`), 0o644)
+
+	s, err := LoadStore()
+	if err != nil {
+		t.Fatal(err)
+	}
+	s.setRunMode("minecraft")
+	p, err := s.createFpsPack()
+	if err != nil {
+		t.Fatalf("createFpsPack: %v", err)
+	}
+	var bundled *Mod
+	names := map[string]bool{}
+	for i := range p.Mods {
+		names[p.Mods[i].Name] = true
+		if p.Mods[i].Bundled {
+			bundled = &p.Mods[i]
+		}
+	}
+	if bundled == nil || bundled.Name != "Void Client" {
+		t.Fatal("Void Client bundled mod missing from FPS pack")
+	}
+	for _, want := range []string{"Sodium", "Lithium", "Fabric API"} {
+		if !names[want] {
+			t.Errorf("FPS pack missing %s (got %v)", want, names)
+		}
+	}
+	if err := installToMinecraft(s, p, func(float64, string) {}); err != nil {
+		t.Fatalf("install: %v", err)
+	}
+	jar := filepath.Join(tmp, "data", "instances", p.ID, "mods", bundled.Filename)
+	info, err := os.Stat(jar)
+	if err != nil {
+		t.Fatalf("bundled jar not installed: %v", err)
+	}
+	if info.Size() < 1000 {
+		t.Fatalf("bundled jar too small: %d", info.Size())
+	}
+	t.Logf("FPS pack installed %d mods incl. %s", len(p.Mods), bundled.Filename)
+}

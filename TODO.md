@@ -16,6 +16,8 @@ Done:
 - [x] First-run choice: Minecraft Launcher (default) or Standalone
 - [x] Minecraft-Launcher mode: write profile + download mods with SHA-512 checks
 - [x] Ships as a single `VoidLauncher.exe` (no admin), on getvoidclient.com
+- [x] One-click **Void FPS Boost** pack: bundles the Void Client jar + the speed mods,
+      so the launcher download includes the FPS booster
 
 Still to do:
 - [ ] **Standalone mode**: download Minecraft + Java + Fabric and launch the game itself,

@@ -28,6 +28,7 @@ type Mod struct {
 	Sha512        string `json:"sha512"`
 	Sha1          string `json:"sha1"`
 	Size          int64  `json:"size"`
+	Bundled       bool   `json:"bundled"` // shipped inside the launcher (the Void Client mod)
 }
 
 type Pack struct {
@@ -131,6 +132,40 @@ func (s *Store) createPack(name, mc, loader, cover string) *Pack {
 	s.Packs = append(s.Packs, p)
 	s.save()
 	return p
+}
+
+// createFpsPack builds the one-click "Void FPS Boost" pack: the bundled Void
+// Client mod plus the speed mods from Modrinth (dependencies pulled in too).
+func (s *Store) createFpsPack() (*Pack, error) {
+	s.mu.Lock()
+	p := &Pack{
+		ID:     newID(),
+		Name:   "Void FPS Boost",
+		MC:     "26.3",
+		Loader: "Fabric",
+		RAMMb:  s.ramForThisPC(),
+		Mods: []Mod{{
+			ProjectID:     "voidclient",
+			Name:          "Void Client",
+			Author:        "Timothy Kitson",
+			Category:      "Performance",
+			VersionNumber: voidClientVersion(),
+			Filename:      "voidclient-" + voidClientVersion() + ".jar",
+			Size:          int64(len(voidClientJar)),
+			Bundled:       true,
+		}},
+		Created: time.Now().UTC(),
+	}
+	s.Packs = append(s.Packs, p)
+	s.save()
+	s.mu.Unlock()
+
+	for _, slug := range fpsPackSlugs {
+		if _, err := s.addMod(p.ID, slug); err != nil {
+			return p, fmt.Errorf("adding %s: %w", slug, err)
+		}
+	}
+	return p, nil
 }
 
 func (s *Store) deletePack(id string) {

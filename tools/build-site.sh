@@ -25,7 +25,9 @@ cp installer/winres/icon128.png installer/payload/profile-icon.png
 cp dist/VoidClient-Installer.exe site/VoidClient-Installer.exe
 cp "dist/VoidClient-$VERSION.mrpack" site/VoidClient.mrpack
 
-# Void Launcher (standalone modpack launcher)
+# Void Launcher (standalone modpack launcher) — bundles the Void Client jar
+cp "build/libs/voidclient-$VERSION.jar" launcher/bundled/voidclient.jar
+printf '%s' "$VERSION" > launcher/bundled/version.txt
 (
 	cd launcher
 	go run github.com/tc-hib/go-winres@v0.3.3 make --in winres/winres.json --arch amd64

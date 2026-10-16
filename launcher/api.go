@@ -96,6 +96,20 @@ func registerAPI(mux *http.ServeMux, s *Store) {
 		writeJSON(w, s.createPack(body.Name, body.MC, body.Loader, body.Cover))
 	})
 
+	mux.HandleFunc("/api/packs/fps", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "POST only", http.StatusMethodNotAllowed)
+			return
+		}
+		p, err := s.createFpsPack()
+		if err != nil {
+			// The pack still exists with whatever was added; report the problem.
+			httpErr(w, err)
+			return
+		}
+		writeJSON(w, p)
+	})
+
 	mux.HandleFunc("/api/packs/delete", func(w http.ResponseWriter, r *http.Request) {
 		var body struct{ ID string }
 		if !readJSON(w, r, &body) {

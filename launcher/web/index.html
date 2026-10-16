@@ -279,7 +279,10 @@ body::after { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-ar
 	<section id="view-packs">
 		<div class="section-head">
 			<div><h2>My Packs</h2><div class="sub" id="packSub"></div></div>
-			<button class="btn btn-primary" id="newPackBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New Pack</button>
+			<div style="display:flex;gap:10px;flex-wrap:wrap">
+				<button class="btn btn-ghost" id="fpsPackBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>Void FPS Boost</button>
+				<button class="btn btn-primary" id="newPackBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>New Pack</button>
+			</div>
 		</div>
 		<div class="pack-list" id="packList"></div>
 		<button class="new-row" id="newRow" style="margin-top:13px"><div class="plus"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div><div style="text-align:left"><b>Create a modpack</b><br><span style="font-size:13px;color:var(--faint)">Pick a version and loader, then add mods</span></div></button>
