@@ -8,6 +8,11 @@
   Content-Disposition: attachment; filename="VoidClient.mrpack"
   Cache-Control: no-cache
 
+/VoidLauncher.exe
+  Content-Type: application/vnd.microsoft.portable-executable
+  Content-Disposition: attachment; filename="VoidLauncher.exe"
+  Cache-Control: no-cache
+
 /img/*
   Cache-Control: public, max-age=604800
 

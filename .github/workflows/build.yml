@@ -28,6 +28,8 @@ jobs:
           echo '{"profiles":{},"version":3}' > "$RUNNER_TEMP/mc/.minecraft/launcher_profiles.json"
           cd installer && go run . -silent -minecraft-dir "$RUNNER_TEMP/mc/.minecraft" -game-dir "$RUNNER_TEMP/mc/.voidclient"
           test -f "$RUNNER_TEMP/mc/.voidclient/mods/voidclient-$(grep '^version=' ../gradle.properties | cut -d= -f2).jar"
+      - name: test launcher
+        run: cd launcher && go test ./...
       - name: upload site
         uses: actions/upload-artifact@v7
         with:

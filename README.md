@@ -90,5 +90,28 @@ python3 pack/build.py lock       # update pack/mods.lock.json to the newest 26.3
 - `src/` is the Void Client Fabric mod.
 - `pack/` holds the mod list (`pack.json`) and the exact pinned versions (`mods.lock.json`).
 - `installer/` is the Windows installer (Go, no dependencies besides `golang.org/x/sys`). `-silent` installs without a window, and `-minecraft-dir` and `-game-dir` point it at test folders.
+- `launcher/` is the Void Launcher (see below).
 - `site/` is the website for getvoidclient.com. Upload the whole folder to Netlify.
 - `branding/` has the icon source (`make_icon.py`) and a 1024 px master.
+
+## Void Launcher
+
+`launcher/` is a standalone modpack launcher (a single `VoidLauncher.exe`). It's a
+Go program that runs a small local server and opens the black-and-purple UI in an
+app window (Microsoft Edge in `--app` mode, falling back to the default browser).
+No admin rights, nothing to install.
+
+It browses mods live from Modrinth, builds modpacks (each pinned to a Minecraft
+version and Fabric, with required dependencies added automatically), and installs
+them. **Minecraft-Launcher mode** adds each pack as a profile in the official
+Minecraft Launcher and downloads its mods with SHA-512 checks — the same proven
+path as the Void Client installer. **Standalone mode** (the launcher downloads and
+runs Minecraft itself) is stubbed as "coming soon".
+
+```
+cd launcher
+go test ./...                     # end-to-end: create pack, add mods + deps, install (hits Modrinth)
+go run .                          # run locally (set VOID_DATA_DIR / VOID_MC_DIR to use test folders)
+```
+
+`tools/build-site.sh` also builds `VoidLauncher.exe` and copies it into `site/`.

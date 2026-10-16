@@ -45,3 +45,6 @@ dist/
 
 installer/payload/
 installer/*.syso
+
+launcher/*.syso
+launcher/dist/

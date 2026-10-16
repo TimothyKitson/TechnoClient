@@ -1,18 +1,30 @@
 # Void Client – TODO
 
-## Next big feature: Void Launcher (modpack builder)
+## Void Launcher (modpack builder) — in progress
 
-A CurseForge-style launcher for building and playing modpacks, themed purple and black like the rest of Void Client.
+A CurseForge-style launcher for building and playing modpacks, themed purple and black.
+Lives in `launcher/`. Phase 1 is built and shipping; standalone mode is next.
 
-- [ ] Browse and search every mod (Modrinth first, its API is free and needs no key; CurseForge later, its API needs an approved key)
-- [ ] Create modpacks and add mods to them, then press Play
-- [ ] When adding a mod, pre-select the mod version that matches the pack's Minecraft version and loader
-- [ ] Before downloading, check that the mod version is compatible with:
-  - [ ] the pack's Minecraft version and loader
-  - [ ] the other mods already in the pack (required dependencies, declared incompatibilities)
-- [ ] If the mod works with neither the pack's version nor its other mods, offer to make a new pack with the right version and loader already filled in, so the only step left is pressing **Create**
-- [ ] Automatically pull in required dependencies (for example Fabric API, Cloth Config)
-- [ ] Purple and black theme everywhere (launcher, menus, pack pages)
+Done:
+- [x] Browse and search mods live from Modrinth (free API, no key)
+- [x] Create modpacks and add mods to them, then press Play
+- [x] Pick the mod version that matches the pack's Minecraft version and loader
+- [x] Only offer mods compatible with the pack's version and loader (search is facet-filtered)
+- [x] Automatically pull in required dependencies (e.g. Fabric API, Cloth Config)
+- [x] Purple and black theme everywhere, real Void logo + Modrinth icons
+- [x] Modpack cover images (default + choose your own)
+- [x] First-run choice: Minecraft Launcher (default) or Standalone
+- [x] Minecraft-Launcher mode: write profile + download mods with SHA-512 checks
+- [x] Ships as a single `VoidLauncher.exe` (no admin), on getvoidclient.com
+
+Still to do:
+- [ ] **Standalone mode**: download Minecraft + Java + Fabric and launch the game itself,
+      with Microsoft (Xbox) login. This is the big remaining piece.
+- [ ] Native app window instead of Edge `--app` (tray icon, clean quit)
+- [ ] Warn on declared mod incompatibilities, not just missing dependencies
+- [ ] Update/remove mods in a pack with version pinning; export a pack as `.mrpack`
+- [ ] CurseForge as a second source (needs an approved API key)
+- [ ] Quilt / NeoForge loaders (only Fabric is wired up now)
 
 Useful Modrinth endpoints:
 - `GET /v2/search?query=...&facets=[["versions:26.3"],["categories:fabric"]]`
