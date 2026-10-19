@@ -70,6 +70,16 @@ func LoadStore() (*Store, error) {
 		json.Unmarshal(data, s)
 	}
 	s.path = filepath.Join(dir, "launcher.json")
+	dirty := false
+	for _, p := range s.Packs {
+		if p.Dir == "" {
+			p.Dir = s.uniqueFolderLocked(folderName(p.Name))
+			dirty = true
+		}
+	}
+	if dirty {
+		s.save()
+	}
 	return s, nil
 }
 
@@ -184,7 +194,7 @@ func voidClientMod() Mod {
 	}
 }
 
-func (s *Store) createSeededPack(name, mc, loader, cover string) *Pack {
+func (s *Store) createSeededPack(name, mc, loader, cover string) (*Pack, []string) {
 	p := s.createPack(name, mc, loader, cover)
 	if mc == "26.3" {
 		s.mu.Lock()
@@ -192,14 +202,17 @@ func (s *Store) createSeededPack(name, mc, loader, cover string) *Pack {
 		s.save()
 		s.mu.Unlock()
 	}
+	var failed []string
 	for _, slug := range fpsPackSlugs {
-		s.addMod(p.ID, slug)
+		if _, err := s.addMod(p.ID, slug); err != nil {
+			failed = append(failed, slug)
+		}
 	}
-	return p
+	return p, failed
 }
 
-func (s *Store) createFpsPack() (*Pack, error) {
-	return s.createSeededPack("Void FPS Boost", "26.3", "Fabric", ""), nil
+func (s *Store) createFpsPack() (*Pack, []string) {
+	return s.createSeededPack("Void FPS Boost", "26.3", "Fabric", "")
 }
 
 func (s *Store) deletePack(id string) {
@@ -311,6 +324,16 @@ func (s *Store) instanceDir(p *Pack) string {
 		dir = folderName(p.Name)
 	}
 	return filepath.Join(modpacksRoot(), dir)
+}
+
+func (s *Store) instanceDirByID(id string) (string, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	p := s.find(id)
+	if p == nil {
+		return "", false
+	}
+	return s.instanceDir(p), true
 }
 
 func sortedPacks(ps []*Pack) []*Pack {

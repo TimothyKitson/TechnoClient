@@ -94,7 +94,8 @@ func registerAPI(mux *http.ServeMux, s *Store) {
 		if body.Loader == "" {
 			body.Loader = "Fabric"
 		}
-		writeJSON(w, s.createSeededPack(body.Name, body.MC, body.Loader, body.Cover))
+		p, warnings := s.createSeededPack(body.Name, body.MC, body.Loader, body.Cover)
+		writeJSON(w, map[string]any{"pack": p, "warnings": warnings})
 	})
 
 	mux.HandleFunc("/api/packs/fps", func(w http.ResponseWriter, r *http.Request) {
@@ -102,13 +103,8 @@ func registerAPI(mux *http.ServeMux, s *Store) {
 			http.Error(w, "POST only", http.StatusMethodNotAllowed)
 			return
 		}
-		p, err := s.createFpsPack()
-		if err != nil {
-			// The pack still exists with whatever was added; report the problem.
-			httpErr(w, err)
-			return
-		}
-		writeJSON(w, p)
+		p, warnings := s.createFpsPack()
+		writeJSON(w, map[string]any{"pack": p, "warnings": warnings})
 	})
 
 	mux.HandleFunc("/api/packs/delete", func(w http.ResponseWriter, r *http.Request) {
@@ -168,12 +164,12 @@ func registerAPI(mux *http.ServeMux, s *Store) {
 		if !readJSON(w, r, &body) {
 			return
 		}
-		p := s.find(body.PackID)
-		if p == nil {
+		dir, ok := s.instanceDirByID(body.PackID)
+		if !ok {
 			http.Error(w, "pack not found", http.StatusNotFound)
 			return
 		}
-		modsDir := filepath.Join(s.instanceDir(p), "mods")
+		modsDir := filepath.Join(dir, "mods")
 		if err := os.MkdirAll(modsDir, 0o755); err != nil {
 			httpErr(w, err)
 			return

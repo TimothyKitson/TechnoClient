@@ -213,7 +213,7 @@ function openNewPack() {
 	scrim.innerHTML =
 		`<div class="modal" role="dialog" aria-modal="true">
 			<h2>Create a modpack</h2>
-			<p class="lead">Pick a Minecraft version and loader. It comes with Void Client and the FPS boost mods already in — remove any you don't want.</p>
+			<p class="lead">Pick a Minecraft version and loader. It starts with the FPS boost mods (and Void Client on 26.3) — remove any you don't want.</p>
 			<div class="field"><label for="np-name">Pack name</label><input id="np-name" value="My Awesome Pack"></div>
 			<div class="two">
 				<div class="field"><label for="np-mc">Minecraft version</label><select id="np-mc">${opts}</select></div>
@@ -241,11 +241,12 @@ function openNewPack() {
 		scrim.remove();
 		setBusy('Creating "' + name + '"…\nAdding Void Client and the FPS boost mods.');
 		try {
-			await api("/api/packs/create", { method: "POST", body: JSON.stringify({ Name: name, MC: mc, Loader: loader, Cover: chosenCover }) });
+			const res = await api("/api/packs/create", { method: "POST", body: JSON.stringify({ Name: name, MC: mc, Loader: loader, Cover: chosenCover }) });
 			clearBusy();
 			await refresh();
 			show("packs");
-			toast('Created "' + name + '" — comes with the FPS boost, remove what you want');
+			if (res.warnings && res.warnings.length) toast('Created "' + name + '", but couldn\'t add: ' + res.warnings.join(", ") + " — check your internet", true);
+			else toast('Created "' + name + '" — comes with the FPS boost, remove what you want');
 		} catch (e) { clearBusy(); await refresh(); toast(e.message, true); }
 	});
 }
@@ -255,11 +256,12 @@ $("#newRow").addEventListener("click", openNewPack);
 $("#fpsPackBtn").addEventListener("click", async () => {
 	setBusy("Building the Void FPS Boost pack…\nAdding Void Client and the speed mods.");
 	try {
-		await api("/api/packs/fps", { method: "POST", body: "{}" });
+		const res = await api("/api/packs/fps", { method: "POST", body: "{}" });
 		clearBusy();
 		await refresh();
 		show("packs");
-		toast("Void FPS Boost pack created — press Play");
+		if (res.warnings && res.warnings.length) toast("FPS pack created, but couldn't add: " + res.warnings.join(", ") + " — check your internet", true);
+		else toast("Void FPS Boost pack created — press Play");
 	} catch (e) { clearBusy(); await refresh(); toast(e.message, true); }
 });
 

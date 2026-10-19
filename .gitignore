@@ -45,6 +45,10 @@ dist/
 
 installer/payload/
 installer/*.syso
+installer/installer
+installer/installer.exe
 
 launcher/*.syso
 launcher/dist/
+launcher/launcher
+launcher/launcher.exe

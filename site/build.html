@@ -129,7 +129,6 @@ h1{font-family:var(--display);font-weight:700;font-size:22px;margin:0 0 4px;lett
 
 <script>
 const API = "https://api.modrinth.com/v2";
-const UA = "TimothyKitson/TechnoClient void-pack-builder";
 const $ = (s) => document.querySelector(s);
 const el = (t, c) => { const e = document.createElement(t); if (c) e.className = c; return e; };
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -142,7 +141,7 @@ let activeCat = "All";
 let projectCache = new Map();
 
 async function mj(path) {
-	const r = await fetch(API + path, { headers: { "User-Agent": UA } });
+	const r = await fetch(API + path);
 	if (!r.ok) throw new Error("Modrinth " + r.status);
 	return r.json();
 }
@@ -165,9 +164,10 @@ async function addMod(id, dep, knownTitle, knownIcon) {
 	if (state.mods.has(id)) return 0;
 	const v = await mBestVersion(id, state.mc);
 	if (!v) { if (!dep) throw new Error("No version for Minecraft " + state.mc); return 0; }
+	const f = v.files.find((x) => x.primary) || v.files[0];
+	if (!f) { if (!dep) throw new Error("No download for " + (knownTitle || id) + " on Minecraft " + state.mc); return 0; }
 	let title = knownTitle, icon = knownIcon, slug = id;
 	if (!title) { const p = await mProject(id); title = p.title; icon = p.icon_url; slug = p.slug; }
-	const f = v.files.find((x) => x.primary) || v.files[0];
 	state.mods.set(v.project_id, {
 		projectId: v.project_id, slug, name: title, iconUrl: icon, dep: !!dep,
 		versionNumber: v.version_number, filename: f.filename, url: f.url, sha512: f.hashes.sha512, size: f.size,

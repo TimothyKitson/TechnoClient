@@ -88,9 +88,9 @@ func TestFpsPack(t *testing.T) {
 		t.Fatal(err)
 	}
 	s.setRunMode("minecraft")
-	p, err := s.createFpsPack()
-	if err != nil {
-		t.Fatalf("createFpsPack: %v", err)
+	p, warnings := s.createFpsPack()
+	if len(warnings) > 0 {
+		t.Logf("seed warnings: %v", warnings)
 	}
 	var bundled *Mod
 	names := map[string]bool{}

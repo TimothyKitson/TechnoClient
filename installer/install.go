@@ -309,7 +309,7 @@ func downloadOnce(mod lockedMod, target string, onBytes func(int64)) error {
 	if err := temp.Close(); err != nil {
 		return err
 	}
-	if !strings.EqualFold(hex.EncodeToString(hash.Sum(nil)), mod.Sha512) {
+	if mod.Sha512 != "" && !strings.EqualFold(hex.EncodeToString(hash.Sum(nil)), mod.Sha512) {
 		return errors.New("file was damaged while downloading")
 	}
 	return os.Rename(temp.Name(), target)
