@@ -35,6 +35,9 @@ async function refresh() {
 	state.packs = state.packs || [];
 	state.packs.forEach((p) => { p.mods = p.mods || []; });
 	$("#runMode").textContent = state.runMode === "standalone" ? "Standalone" : "Minecraft Launcher";
+	const acctBtn = $("#accountBtn");
+	acctBtn.hidden = state.runMode !== "standalone";
+	$("#accountName").textContent = state.signedIn && state.account ? state.account.name : "Sign in";
 	renderPacks();
 	return state;
 }
@@ -277,11 +280,16 @@ function clearBusy() { if (busy) { busy.remove(); busy = null; } }
 
 async function playPack(p) {
 	if (!p) return;
-	setBusy("Setting up " + p.name + "…\nDownloading mods on first run can take a minute.");
+	const standalone = state.runMode === "standalone";
+	if (standalone && !state.signedIn) { openSignIn(); return; }
+	setBusy(standalone
+		? "Launching " + p.name + "…\nFirst run downloads Minecraft, Java and mods — this can take several minutes."
+		: "Setting up " + p.name + "…\nDownloading mods on first run can take a minute.");
 	try {
 		const res = await api("/api/packs/play", { method: "POST", body: JSON.stringify({ PackID: p.id }) });
 		clearBusy();
-		if (res.launcherOpened) toast("Opened the Minecraft Launcher — pick " + p.name + " and press Play");
+		if (res.mode === "standalone") toast(res.launched ? p.name + " is launching — have fun!" : p.name + " is ready");
+		else if (res.launcherOpened) toast("Opened the Minecraft Launcher — pick " + p.name + " and press Play");
 		else toast(p.name + " is ready in the Minecraft Launcher");
 	} catch (e) { clearBusy(); toast(e.message, true); }
 }
@@ -305,8 +313,8 @@ function openRunChooser(firstRun) {
 				<button class="choice" data-mode="standalone">
 					<span class="check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg></span>
 					<div class="ic2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 5v14l11-7z"/></svg></div>
-					<h3>Standalone <span class="rec" style="color:var(--warn);border-color:var(--warn)">SOON</span></h3>
-					<p>Void downloads and runs Minecraft itself, like CurseForge. Coming in a later update.</p>
+					<h3>Standalone</h3>
+					<p>Void downloads and runs Minecraft itself, like CurseForge — no Minecraft Launcher needed. Sign in with Microsoft, or play offline.</p>
 				</button>
 			</div>
 			<div class="foot">
@@ -329,6 +337,72 @@ function openRunChooser(firstRun) {
 	});
 }
 $("#runPill").addEventListener("click", () => openRunChooser(false));
+
+/* ---------- Sign in (standalone) ---------- */
+let pollTimer = null;
+function openSignIn() {
+	if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; }
+	const scrim = el("div", "scrim");
+	const signedIn = state.signedIn && state.account;
+	scrim.innerHTML =
+		`<div class="setup" role="dialog" aria-modal="true" style="max-width:520px">
+			<h2>Sign in to play</h2>
+			<p class="lead">Standalone runs Minecraft itself, so it needs an account.${signedIn ? " You're signed in as <b>" + esc(state.account.name) + "</b>." : ""}</p>
+			<div id="si-body">
+				<button class="btn btn-primary btn-big" id="si-ms" style="width:100%;justify-content:center">Sign in with Microsoft</button>
+				<div style="display:flex;align-items:center;gap:10px;color:var(--faint);font-size:12px;margin:14px 0"><span style="flex:1;height:1px;background:var(--line)"></span>OR<span style="flex:1;height:1px;background:var(--line)"></span></div>
+				<label style="font-size:12.5px;color:var(--muted);font-weight:600">Play offline (single-player or your own offline server)</label>
+				<div style="display:flex;gap:8px;margin-top:6px">
+					<input id="si-name" placeholder="Username" value="${signedIn && state.account.type === "offline" ? esc(state.account.name) : "Player"}" maxlength="16" style="flex:1;padding:10px 12px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line);color:var(--text);font:inherit">
+					<button class="btn btn-ghost" id="si-offline">Use name</button>
+				</div>
+			</div>
+			<div class="foot">
+				<small>Microsoft sign-in needs your own Minecraft account.</small>
+				<div style="display:flex;gap:8px">
+					${signedIn ? '<button class="btn btn-ghost" id="si-logout">Sign out</button>' : ""}
+					<button class="btn btn-ghost" data-close>Close</button>
+				</div>
+			</div>
+		</div>`;
+	document.body.appendChild(scrim);
+	const close = () => { if (pollTimer) { clearTimeout(pollTimer); pollTimer = null; } scrim.remove(); };
+	scrim.querySelector("[data-close]").addEventListener("click", close);
+	scrim.addEventListener("click", (e) => { if (e.target === scrim) close(); });
+	const logoutBtn = scrim.querySelector("#si-logout");
+	if (logoutBtn) logoutBtn.addEventListener("click", async () => {
+		try { await api("/api/auth/logout", { method: "POST", body: "{}" }); await refresh(); close(); toast("Signed out"); }
+		catch (e) { toast(e.message, true); }
+	});
+	scrim.querySelector("#si-offline").addEventListener("click", async () => {
+		const name = scrim.querySelector("#si-name").value.trim() || "Player";
+		try { await api("/api/auth/offline", { method: "POST", body: JSON.stringify({ Name: name }) }); await refresh(); close(); toast("Playing offline as " + name); }
+		catch (e) { toast(e.message, true); }
+	});
+	scrim.querySelector("#si-ms").addEventListener("click", async () => {
+		const body = scrim.querySelector("#si-body");
+		try {
+			const r = await api("/api/auth/login", { method: "POST", body: "{}" });
+			body.innerHTML =
+				`<div style="text-align:center">
+					<p style="margin:0 0 10px">Go to <a href="${esc(r.verifyUrl)}" target="_blank" rel="noopener" style="color:var(--purple-bright)">${esc(r.verifyUrl)}</a> and enter this code:</p>
+					<div style="font-family:var(--display);font-size:30px;letter-spacing:4px;color:var(--purple-bright);background:var(--surface-2);border:1px solid var(--line-bright);border-radius:12px;padding:14px;user-select:all">${esc(r.userCode)}</div>
+					<p style="margin:12px 0 0;color:var(--faint);font-size:13px"><span class="spinner" style="width:14px;height:14px;display:inline-block;vertical-align:middle;margin-right:6px"></span>Waiting for you to finish signing in…</p>
+				</div>`;
+			const poll = async () => {
+				try {
+					const pr = await api("/api/auth/poll", { method: "POST", body: "{}" });
+					if (pr.ok) { await refresh(); close(); toast("Signed in as " + pr.name); return; }
+					pollTimer = setTimeout(poll, ((pr.interval || 5) * 1000));
+				} catch (e) { body.innerHTML = '<p style="color:var(--bad)">' + esc(e.message) + "</p>"; }
+			};
+			pollTimer = setTimeout(poll, ((r.interval || 5) * 1000) || 3000);
+		} catch (e) {
+			body.innerHTML = '<p style="color:var(--bad)">' + esc(e.message) + "</p>";
+		}
+	});
+}
+$("#accountBtn").addEventListener("click", openSignIn);
 
 /* ---------- Toast ---------- */
 function toast(msg, bad) {

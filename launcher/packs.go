@@ -57,6 +57,7 @@ type Store struct {
 	RunMode string  `json:"runMode"` // "minecraft" or "standalone"
 	Packs   []*Pack `json:"packs"`
 	path    string
+	pending *deviceAuth
 }
 
 func LoadStore() (*Store, error) {

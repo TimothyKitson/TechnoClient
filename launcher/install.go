@@ -48,8 +48,25 @@ func installToMinecraft(s *Store, p *Pack, progress progressFn) error {
 	if err := os.MkdirAll(modsDir, 0o755); err != nil {
 		return err
 	}
-	managed := readManaged(gameDir)
+	if err := downloadMods(p, modsDir, func(f float64, status string) {
+		progress(0.05+0.9*f, status)
+	}); err != nil {
+		return err
+	}
 
+	progress(0.97, "Adding to the Minecraft Launcher")
+	for _, pf := range profiles {
+		if err := writeProfile(pf, versionID, p, gameDir); err != nil {
+			return fmt.Errorf("updating %s: %w", filepath.Base(pf), err)
+		}
+	}
+	progress(1, "Ready")
+	return nil
+}
+
+func downloadMods(p *Pack, modsDir string, progress progressFn) error {
+	gameDir := filepath.Dir(modsDir)
+	managed := readManaged(gameDir)
 	var total int64 = 1
 	for _, m := range p.Mods {
 		total += m.Size
@@ -65,17 +82,17 @@ func installToMinecraft(s *Store, p *Pack, progress progressFn) error {
 				return fmt.Errorf("installing %s: %w", m.Name, err)
 			}
 			done += int64(len(voidClientJar))
-			progress(0.05+0.9*float64(done)/float64(total), label)
+			progress(float64(done)/float64(total), label)
 			continue
 		}
 		if fileMatches(target, m.Sha512) {
 			done += m.Size
-			progress(0.05+0.9*float64(done)/float64(total), label)
+			progress(float64(done)/float64(total), label)
 			continue
 		}
 		base := done
 		if err := download(m, target, func(n int64) {
-			progress(0.05+0.9*float64(base+n)/float64(total), label)
+			progress(float64(base+n)/float64(total), label)
 		}); err != nil {
 			return fmt.Errorf("downloading %s: %w", m.Name, err)
 		}
@@ -87,14 +104,6 @@ func installToMinecraft(s *Store, p *Pack, progress progressFn) error {
 		}
 	}
 	writeManaged(gameDir, keep)
-
-	progress(0.97, "Adding to the Minecraft Launcher")
-	for _, pf := range profiles {
-		if err := writeProfile(pf, versionID, p, gameDir); err != nil {
-			return fmt.Errorf("updating %s: %w", filepath.Base(pf), err)
-		}
-	}
-	progress(1, "Ready")
 	return nil
 }
 

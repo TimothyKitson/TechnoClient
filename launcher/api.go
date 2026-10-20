@@ -11,14 +11,21 @@ import (
 
 func registerAPI(mux *http.ServeMux, s *Store) {
 	mux.HandleFunc("/api/state", func(w http.ResponseWriter, r *http.Request) {
-		writeJSON(w, map[string]any{
+		resp := map[string]any{
 			"runMode":          s.RunMode,
 			"needsSetup":       s.RunMode == "",
 			"ramMb":            totalRAMMB(),
 			"recommendedRamMb": s.ramForThisPC(),
 			"packs":            sortedPacks(s.Packs),
 			"loaders":          []string{"Fabric"},
-		})
+			"msaConfigured":    msaClientID() != "",
+			"signedIn":         false,
+		}
+		if a := loadSavedAccount(); a != nil {
+			resp["signedIn"] = true
+			resp["account"] = map[string]any{"name": a.Name, "type": a.Type}
+		}
+		writeJSON(w, resp)
 	})
 
 	mux.HandleFunc("/api/mcversions", func(w http.ResponseWriter, r *http.Request) {
@@ -181,6 +188,91 @@ func registerAPI(mux *http.ServeMux, s *Store) {
 		writeJSON(w, map[string]any{"ok": true, "path": modsDir})
 	})
 
+	mux.HandleFunc("/api/auth/status", func(w http.ResponseWriter, r *http.Request) {
+		resp := map[string]any{"signedIn": false, "msaConfigured": msaClientID() != ""}
+		if a := loadSavedAccount(); a != nil {
+			resp["signedIn"] = true
+			resp["name"] = a.Name
+			resp["type"] = a.Type
+		}
+		writeJSON(w, resp)
+	})
+
+	mux.HandleFunc("/api/auth/login", func(w http.ResponseWriter, r *http.Request) {
+		userCode, verifyURL, da, err := startDeviceLogin()
+		if err != nil {
+			httpErr(w, err)
+			return
+		}
+		s.mu.Lock()
+		s.pending = da
+		s.mu.Unlock()
+		writeJSON(w, map[string]any{"userCode": userCode, "verifyUrl": verifyURL})
+	})
+
+	mux.HandleFunc("/api/auth/poll", func(w http.ResponseWriter, r *http.Request) {
+		s.mu.Lock()
+		da := s.pending
+		s.mu.Unlock()
+		if da == nil {
+			httpErrMsg(w, "No sign-in is in progress.")
+			return
+		}
+		if time.Now().After(da.Expiry) {
+			s.mu.Lock()
+			s.pending = nil
+			s.mu.Unlock()
+			httpErrMsg(w, "The sign-in code expired. Please try again.")
+			return
+		}
+		tok, pending, err := pollDeviceToken(da)
+		if err != nil {
+			s.mu.Lock()
+			s.pending = nil
+			s.mu.Unlock()
+			httpErr(w, err)
+			return
+		}
+		if pending {
+			writeJSON(w, map[string]any{"pending": true, "interval": da.Interval})
+			return
+		}
+		acct, err := finishMicrosoft(tok)
+		if err != nil {
+			s.mu.Lock()
+			s.pending = nil
+			s.mu.Unlock()
+			httpErr(w, err)
+			return
+		}
+		if err := saveAccount(acct); err != nil {
+			httpErr(w, err)
+			return
+		}
+		s.mu.Lock()
+		s.pending = nil
+		s.mu.Unlock()
+		writeJSON(w, map[string]any{"ok": true, "name": acct.Name})
+	})
+
+	mux.HandleFunc("/api/auth/offline", func(w http.ResponseWriter, r *http.Request) {
+		var body struct{ Name string }
+		if !readJSON(w, r, &body) {
+			return
+		}
+		acct := offlineAccount(body.Name)
+		if err := saveAccount(&savedAccount{Type: "offline", Name: acct.Name, UUID: acct.UUID}); err != nil {
+			httpErr(w, err)
+			return
+		}
+		writeJSON(w, map[string]any{"ok": true, "name": acct.Name})
+	})
+
+	mux.HandleFunc("/api/auth/logout", func(w http.ResponseWriter, r *http.Request) {
+		clearAccount()
+		writeJSON(w, map[string]any{"ok": true})
+	})
+
 	mux.HandleFunc("/api/quit", func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, map[string]any{"ok": true})
 		go func() { time.Sleep(300 * time.Millisecond); os.Exit(0) }()
@@ -198,7 +290,23 @@ func installHandler(w http.ResponseWriter, r *http.Request, s *Store, play bool)
 		return
 	}
 	if s.RunMode == "standalone" {
-		httpErrMsg(w, "Standalone mode is coming in a later update. For now switch to Minecraft Launcher mode in the top bar.")
+		acct, err := currentAccount()
+		if err != nil {
+			httpErr(w, err)
+			return
+		}
+		spec, err := installStandalone(s, p, acct, func(float64, string) {})
+		if err != nil {
+			httpErr(w, err)
+			return
+		}
+		if play {
+			if err := spawnGame(spec); err != nil {
+				httpErr(w, err)
+				return
+			}
+		}
+		writeJSON(w, map[string]any{"ok": true, "mode": "standalone", "launched": play})
 		return
 	}
 	if err := installToMinecraft(s, p, func(float64, string) {}); err != nil {
