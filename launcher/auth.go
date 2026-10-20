@@ -36,7 +36,14 @@ type deviceAuth struct {
 	Expiry     time.Time
 }
 
-func msaClientID() string { return os.Getenv("VOID_MSA_CLIENT_ID") }
+const defaultMSAClientID = ""
+
+func msaClientID() string {
+	if v := os.Getenv("VOID_MSA_CLIENT_ID"); v != "" {
+		return v
+	}
+	return defaultMSAClientID
+}
 
 func offlineUUID(name string) string {
 	h := md5.Sum([]byte("OfflinePlayer:" + name))
