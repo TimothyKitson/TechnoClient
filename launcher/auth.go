@@ -142,7 +142,7 @@ func postJSON(endpoint string, body any, out any) error {
 func startDeviceLogin() (userCode, verifyURL string, da *deviceAuth, err error) {
 	cid := msaClientID()
 	if cid == "" {
-		return "", "", nil, fmt.Errorf("Microsoft login isn't set up yet. Set VOID_MSA_CLIENT_ID to an Azure app client id, or play offline.")
+		return "", "", nil, fmt.Errorf("Microsoft sign-in isn't available in this version. Play offline here, or switch to Minecraft Launcher mode (top bar) to play online with your account.")
 	}
 	var r struct {
 		DeviceCode      string `json:"device_code"`

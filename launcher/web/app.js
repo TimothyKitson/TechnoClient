@@ -349,8 +349,9 @@ function openSignIn() {
 			<h2>Sign in to play</h2>
 			<p class="lead">Standalone runs Minecraft itself, so it needs an account.${signedIn ? " You're signed in as <b>" + esc(state.account.name) + "</b>." : ""}</p>
 			<div id="si-body">
-				<button class="btn btn-primary btn-big" id="si-ms" style="width:100%;justify-content:center">Sign in with Microsoft</button>
-				<div style="display:flex;align-items:center;gap:10px;color:var(--faint);font-size:12px;margin:14px 0"><span style="flex:1;height:1px;background:var(--line)"></span>OR<span style="flex:1;height:1px;background:var(--line)"></span></div>
+				${state.msaConfigured
+					? '<button class="btn btn-primary btn-big" id="si-ms" style="width:100%;justify-content:center">Sign in with Microsoft</button><div style="display:flex;align-items:center;gap:10px;color:var(--faint);font-size:12px;margin:14px 0"><span style="flex:1;height:1px;background:var(--line)"></span>OR<span style="flex:1;height:1px;background:var(--line)"></span></div>'
+					: '<div class="hint" style="margin-bottom:14px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg><div>Online Microsoft sign-in isn\'t available in this version. Play offline below, or use <b>Minecraft Launcher</b> mode (top bar) to play online with your account.</div></div>'}
 				<label style="font-size:12.5px;color:var(--muted);font-weight:600">Play offline (single-player or your own offline server)</label>
 				<div style="display:flex;gap:8px;margin-top:6px">
 					<input id="si-name" placeholder="Username" value="${signedIn && state.account.type === "offline" ? esc(state.account.name) : "Player"}" maxlength="16" style="flex:1;padding:10px 12px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line);color:var(--text);font:inherit">
@@ -379,7 +380,8 @@ function openSignIn() {
 		try { await api("/api/auth/offline", { method: "POST", body: JSON.stringify({ Name: name }) }); await refresh(); close(); toast("Playing offline as " + name); }
 		catch (e) { toast(e.message, true); }
 	});
-	scrim.querySelector("#si-ms").addEventListener("click", async () => {
+	const msBtn = scrim.querySelector("#si-ms");
+	if (msBtn) msBtn.addEventListener("click", async () => {
 		const body = scrim.querySelector("#si-body");
 		try {
 			const r = await api("/api/auth/login", { method: "POST", body: "{}" });
